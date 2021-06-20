@@ -1,0 +1,6 @@
+[ libBlastwave.dylib ]
+# List of selected classes
+class BWModelConfiguration
+class BWModelEventGenerator
+header BWModelConfiguration.hpp
+header BWModelEventGenerator.hpp
