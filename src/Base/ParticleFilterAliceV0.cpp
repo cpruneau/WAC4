@@ -79,10 +79,23 @@ ParticleFilterAliceV0::~ParticleFilterAliceV0()
 bool ParticleFilterAliceV0::accept(Particle & particle)
 {
   ParticleType & type = particle.getType();
+  if (!acceptStatus(particle.isLive()) )            return false;
   if (!acceptCharge(type.getCharge()))              return false;
-  if (!acceptPid(TMath::Abs(type.getPdgCode())))    return false;
+  // -- if (!acceptPid(TMath::Abs(type.getPdgCode())))    return false;
+  if (pidSelected==ByPDG)
+    {
+    if (!acceptPid(particle.getType().getPdgCode())) return false;
+    }
+  else  if (pidSelected==ByUserPID)
+    {
+    if (!acceptPid(particle.getPid()))                 return false;
+    }
+  else
+    {
+    if (!acceptType(particle.getType()))               return false;
+    }
   TLorentzVector & momentum = particle.getMomentum();
-  if (filteringOnPt  && !acceptPt(momentum.Pt()) )     return false;
+  if (filteringOnPt  && !acceptPt(momentum.Pt()))      return false;
   bool accepting = true;
   double eta = momentum.Eta();
   switch (v0Selected)

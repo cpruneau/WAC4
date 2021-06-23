@@ -54,9 +54,9 @@ Nucleus & Nucleus::operator=(const Nucleus & otherNucleus)
 // create the container but do not assign any positions or properties.
 void Nucleus::defineAs(unsigned int z, unsigned int a)
 {
-  cout << "Nucleus::defineAs(unsigned int z, unsigned int a)" << endl;
-  cout << " z = " << z << endl;
-  cout << " a = " << z << endl;
+//  cout << "Nucleus::defineAs(unsigned int z, unsigned int a)" << endl;
+//  cout << " z = " << z << endl;
+//  cout << " a = " << z << endl;
   live       = false;
   pid        = -1;
   ixEtaPhi   = -1;

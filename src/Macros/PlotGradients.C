@@ -501,6 +501,8 @@ int PlotGradients()
     histosGy[k]->Write();
     }
   //outputFile->Close();
+  outputPathName += "CG/";
+  plotter->printAllCanvas(outputPathName);
 
   return 0;
 }
