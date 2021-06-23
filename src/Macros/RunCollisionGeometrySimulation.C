@@ -60,8 +60,8 @@ int RunCollisionGeometrySimulation()
   particles->printProperties(std::cout);
 
   MessageLogger::LogLevel messageLevel = MessageLogger::Info; //MessageLogger::Debug; //
-  unsigned long nEventRequested   = 10000000;
-  unsigned long nEventReported    = 1000;
+  unsigned long nEventRequested   = 20000000;
+  unsigned long nEventReported    = 100000;
   unsigned long nEventPartialSave = 500;
   bool    partialSave             = false;
   bool    subsampleAnalysis       = false;
@@ -71,13 +71,13 @@ int RunCollisionGeometrySimulation()
   TString inputPathName           = getenv("WAC_INPUT_PATH");
   TString outputPathName          = getenv("WAC_OUTPUT_PATH");
   inputPathName  += "/CG/";
-  outputPathName += "/CG/10Million/";
+  outputPathName += "/CG/20Million/";
   gSystem->mkdir(outputPathName,1);
 
   vector<EventFilter*> eventFiltersGen;
   vector<EventFilter*> eventFiltersAna;
   int centralityOption = 1;
-  EventFilter * openEventFilter = new EventFilter(EventFilter::MinBias,0.0,0.0);
+  EventFilter * openEventFilter = new EventFilter(EventFilter::MinBias,1.0,100000.0);
   eventFiltersGen.push_back( openEventFilter);
   switch (centralityOption)
     {

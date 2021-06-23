@@ -96,11 +96,18 @@ void CollisionGeometryAnalyzer::execute()
   Event & event = *eventStreams[0];
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
-    if (!eventFilters[iEventFilter]->accept(event)) continue;
-    incrementEventAccepted(); // count eventStreams used to fill histograms and for scaling at the end...
-    nFilteredEventsAccepted[iEventFilter]++;
-    CollisionGeometryHistograms * histos = (CollisionGeometryHistograms *) histograms[iEventFilter];
-    histos->fill(event,1.0);
+    if (eventFilters[iEventFilter]->accept(event))
+      {
+      incrementEventAccepted(); // count eventStreams used to fill histograms and for scaling at the end...
+      nFilteredEventsAccepted[iEventFilter]++;
+      CollisionGeometryHistograms * histos = (CollisionGeometryHistograms *) histograms[iEventFilter];
+      histos->fill(event,1.0);
+      }
+    else
+      {
+      CollisionGeometryHistograms * histos = (CollisionGeometryHistograms *) histograms[iEventFilter];
+      histos->noFill(event,1.0);
+      }
     }
   if (reportEnd("CollisionGeometryAnalyzer",getName(),"execute()"))
     ;

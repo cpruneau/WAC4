@@ -24,12 +24,14 @@ public:
   virtual void createHistograms();
   virtual void loadHistograms(TFile * inputFile);
   virtual void fill(Event & event, double weight);
+  virtual void noFill(Event & event, double weight);
   virtual void calculateDerivedHistograms();
   virtual void calculateRms(TProfile * h1, TProfile * h1Sq, TH1* h1Rms, TH1* h1Omega, TH1* h1R2);
 
 protected:
 
-  TH1      * h_b;
+  TH1      * h_nProcessedVsB;
+  TH1      * h_nAcceptedVsB;
   TH2      * h_nPartVsB;
   TH2      * h_nBinaryVsB;
   TProfile * h_nPartVsB_Prof;

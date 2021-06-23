@@ -16,14 +16,15 @@ CollisionGeometryHistograms::CollisionGeometryHistograms(const TString & collect
                                                          LogLevel  debugLevel)
 :
 Histograms(collectionName,_configuration,debugLevel),
-h_crossSection(0),
-h_b(0),
+h_nProcessedVsB(0),
+h_nAcceptedVsB(0),
 h_nPart(0),
 h_nBinary(0),
 h_nPartVsB_Prof(0),
 h_nBinaryVsB_Prof(0),
 h_nPartVsB(0),
-h_nBinaryVsB(0)
+h_nBinaryVsB(0),
+h_crossSection(0)
 {
   // no ops
 }
@@ -35,7 +36,8 @@ void CollisionGeometryHistograms::createHistograms()
 
   CollisionGeometryConfiguration & ac = * (CollisionGeometryConfiguration*) getConfiguration();
   TString bn = getHistoBaseName();
-  h_b                 = createHistogram(bn+TString("b"),                     ac.nBins_b,      ac.min_b,       ac.max_b,    "b (fm)",   "Counts", 0, 1);
+  h_nProcessedVsB     = createHistogram(bn+TString("nProcessedVsB"),         ac.nBins_b,      ac.min_b,       ac.max_b,    "b (fm)",   "Counts", 0, 1);
+  h_nAcceptedVsB      = createHistogram(bn+TString("nAcceptedVsB"),          ac.nBins_b,      ac.min_b,       ac.max_b,    "b (fm)",   "Counts", 0, 1);
   h_nPartVsB          = createHistogram(bn+TString("nPartVsB"),              ac.nBins_b,      ac.min_b,       ac.max_b,    ac.nBins_nPart,   ac.min_nPart,   ac.max_nPart,   "b (fm)", "N_{Part}", "Counts",0,1);
   h_nBinaryVsB        = createHistogram(bn+TString("nBinaryVsB"),            ac.nBins_b,      ac.min_b,       ac.max_b,    ac.nBins_nBinary, ac.min_nBinary, ac.max_nBinary, "b (fm)", "N_{Bin}",  "Counts",0,1);
   h_nPartVsB_Prof     = createProfile(bn+TString("nPartVsB_Prof"),           ac.nBins_b,      ac.min_b,       ac.max_b,    "b (fm)",   "<N_{Part}>",1);
@@ -63,8 +65,8 @@ void CollisionGeometryHistograms::createHistograms()
   h_bVsXsect_Prof          = createProfile(bn+TString("bVsXsect_Prof"),         100,             0.0,            100.0,          "Xsect",    "<b>", 0, 1);
   h_bSqVsXsect_Prof        = createProfile(bn+TString("bSqVsXsect_Prof"),       100,             0.0,            100.0,          "Xsect",    "<b^{2}>", 0, 1);
 
-  h_xyDistInteractions     = createHistogram(bn+TString("xyDistInteractions"),   200, -20.0, 20.0,   200, -20.0, 20.0, "x (fm)",  "y (fm)",   "Counts", 0, 1);
-  h_xyDistNucleons         = createHistogram(bn+TString("xyDistNucleons"),   200, -20.0, 20.0,   200, -20.0, 20.0, "x (fm)",  "y (fm)",   "Counts", 0, 1);
+  h_xyDistInteractions     = createHistogram(bn+TString("xyDistInteractions"),   400, -20.0, 20.0,   400, -20.0, 20.0, "x (fm)",  "y (fm)",   "Counts", 0, 1);
+  h_xyDistNucleons         = createHistogram(bn+TString("xyDistNucleons"),   400, -20.0, 20.0,   400, -20.0, 20.0, "x (fm)",  "y (fm)",   "Counts", 0, 1);
   // Derived Histograms
   h_nPartRmsVsB            = createHistogram(bn+TString("nPartRmsVsB"),            ac.nBins_b,      ac.min_b,       ac.max_b,      "b (fm)",   "RMS(N_{Part})");
   h_nPartOmegaVsB          = createHistogram(bn+TString("nPartOmegaVsB"),          ac.nBins_b,      ac.min_b,       ac.max_b,      "b (fm)",   "#omega(N_{part})");
@@ -163,7 +165,7 @@ void CollisionGeometryHistograms::fill(Event & event, double weight)
 //    }
 
   // Impact parameter, cross-section, nParticipants, nBinaries, etc.
-  h_b                      ->Fill(impactPar, weight);
+  h_nAcceptedVsB           ->Fill(impactPar, weight);
   h_nPartVsB               ->Fill(impactPar, nPart,            weight);
   h_nBinaryVsB             ->Fill(impactPar, nBinary,          weight);
   h_nPartVsB_Prof          ->Fill(impactPar, nPart,            weight);
@@ -216,6 +218,27 @@ void CollisionGeometryHistograms::fill(Event & event, double weight)
     h_xyDistNucleons->Fill( position.X(), position.Y() );
     }
 }
+
+void CollisionGeometryHistograms::noFill(Event & event, double weight)
+{
+
+  double impactPar = event.getImpactParameter();
+  double nPart     = event.getNParticipants();
+  double nBinary   = event.getNBinaryCollisions();
+  double xSect     = event.getCrossSection();
+
+//  if (reportInfo("CollisionGeometryHistograms",getName(),"loadHistograms(TFile * inputFile)"))
+//    {
+//    cout<< " impactPar :" << impactPar << endl;
+//    cout<< "     nPart :" << nPart << endl;
+//    cout<< "   nBinary :" << nBinary << endl;
+//    cout<< "     xSect :" << xSect << endl;
+//    }
+
+  // Impact parameter, cross-section, nParticipants, nBinaries, etc.
+  h_nProcessedVsB->Fill(impactPar, weight);
+}
+
 
 void CollisionGeometryHistograms::calculateDerivedHistograms()
 {

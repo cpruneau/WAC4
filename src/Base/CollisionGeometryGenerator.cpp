@@ -171,9 +171,9 @@ void CollisionGeometryGenerator::execute()
   ep.nBinaryTotal      = event.getNBinaryCollisions();  // total number of binary collisions
   ep.impactParameter   = b;    // nucleus-nucleus center distance in fm
   ep.centrality        = -99999; // fraction cross section value
-  ep.multiplicity      = -99999; // nominal multiplicity in the reference range
-  ep.particlesCounted  = -99999;
-  ep.particlesAccepted = -99999;
+  ep.multiplicity      = ep.nBinaryTotal; // number of binary collisions
+  ep.particlesCounted  = ep.nBinaryTotal;
+  ep.particlesAccepted = ep.nBinaryTotal;
   if (reportDebug("CollisionGeometryGenerator",getName(),"execute()"))
     {
     event.printProperties(cout);

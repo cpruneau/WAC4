@@ -62,7 +62,7 @@ int PlotGeometry()
   gStyle->SetOptTitle(0);
   gStyle->SetPadBorderMode(0);
 
-  CanvasConfiguration * landscapeLinear     = new CanvasConfiguration(CanvasConfiguration::SquareWide,CanvasConfiguration::Linear);
+  CanvasConfiguration * landscapeLinear     = new CanvasConfiguration(CanvasConfiguration::LandscapeWide,CanvasConfiguration::Linear);
   CanvasConfiguration * landscapeLogY       = new CanvasConfiguration(CanvasConfiguration::LandscapeWide,CanvasConfiguration::LogY);
   CanvasConfiguration * landscapeLogZ       = new CanvasConfiguration(CanvasConfiguration::SquareWide,CanvasConfiguration::LogZ);
   landscapeLogZ->leftMargin  = 0.2;
@@ -81,15 +81,14 @@ int PlotGeometry()
   // TString inputPathName  = getenv("WAC_REPOSITORY_PATH");
   TString inputPathName  = getenv("WAC_OUTPUT_PATH");
   TString outputPathName = getenv("WAC_OUTPUT_PATH");
-
-  //   /Users/claudeapruneau/Documents/GitHub/WAC/../WAC-DATA/OutputFiles//CollisionGeometryCGG.root
+  inputPathName = "/Users/claudeapruneau/Documents/GitHub/WAC4/data/Repository/CG/";
   TString fileName;
   vector<TString>  fileNames;
   vector<TFile*>   inputFiles;
-  fileNames.push_back("CollisionGeometryCGGA.root");
+  fileNames.push_back("Geom_CGGA.root");
   for (unsigned int iFile=0;iFile<fileNames.size();iFile++)
     {
-    fileName = inputPathName+fileNames[iFile];
+    TString fileName = inputPathName+fileNames[iFile];
     TFile * file = new TFile(fileName,"OLD");
     if (file)
       {
@@ -185,7 +184,7 @@ int PlotGeometry()
       }
     }
 
-  if (true)
+  if (false)
     {
     eventClassNames.clear();
     observableNames.clear();
@@ -213,15 +212,16 @@ int PlotGeometry()
     eventClassNames.push_back("CGGA_bGeq10Lt12");   eventClassTitles.push_back("10<b<12 fm");
 
     eventClassNames.push_back("CGGA_bGeq12Lt16");   eventClassTitles.push_back("12<b<16 fm");
+    eventClassNames.push_back("CGGA_bGeq16Lt20");   eventClassTitles.push_back("16<b<20 fm");
 
     observableNames.push_back("b");
     observableTitles.push_back("b");
-    observableTitlesX.push_back("f (fm)");
+    observableTitlesX.push_back("b (fm)");
     observableTitlesY.push_back("Counts");
     minX.push_back(  0.0);
     maxX.push_back(20.0);
     minY.push_back(  10.0);
-    maxY.push_back(10000.0);
+    maxY.push_back(40000.0);
 
 
     observableNames.push_back("nBinaryVsNPart_Prof");
@@ -231,7 +231,7 @@ int PlotGeometry()
     minX.push_back(  0.0);
     maxX.push_back(500.0);
     minY.push_back(  1.0);
-    maxY.push_back(10000.0);
+    maxY.push_back(3000.0);
 
     graphConfigurations = GraphConfiguration::createConfigurationPalette(eventClassNames.size(),1);
     for (unsigned int iObservable = 0; iObservable<observableNames.size();iObservable++)
@@ -258,14 +258,14 @@ int PlotGeometry()
           return 1;
           }
         }
-      plotters[0]->plot(canvasName,landscapeLogY,graphConfigurations,
+      plotters[0]->plot(canvasName,landscapeLinear,graphConfigurations,
                         observableTitlesX[iObservable], minX[iObservable], maxX[iObservable],
                         observableTitlesY[iObservable], minY[iObservable], maxY[iObservable],
-                        histograms,titles,0.5, 0.25, 0.65, 0.55, 0.03);
+                        histograms,titles,0.25, 0.55, 0.45, 0.85, 0.04);
       }
     }
 
-  if (true)
+  if (false)
     {
     eventClassNames.clear();
     observableNames.clear();
@@ -293,26 +293,27 @@ int PlotGeometry()
     eventClassNames.push_back("CGGA_bGeq10Lt12");   eventClassTitles.push_back("10<b<12 fm");
 
     eventClassNames.push_back("CGGA_bGeq12Lt16");   eventClassTitles.push_back("12<b<16 fm");
- 
+    eventClassNames.push_back("CGGA_bGeq16Lt20");   eventClassTitles.push_back("16<b<20 fm");
+
 
     observableNames.push_back("nPartVsB_Prof");
     observableTitles.push_back("n_{Part}");
-    observableTitlesX.push_back("f (fm)");
+    observableTitlesX.push_back("b (fm)");
     observableTitlesY.push_back("<n_{Part}>");
     minX.push_back(  0.0);
     maxX.push_back(20.0);
-    minY.push_back(  1.0);
-    maxY.push_back(1000.0);
+    minY.push_back(  0.010);
+    maxY.push_back(5000.0);
 
 
 
     observableNames.push_back("nBinaryVsB_Prof");
     observableTitles.push_back("n_{Bin}");
-    observableTitlesX.push_back("f (fm)");
+    observableTitlesX.push_back("b (fm)");
     observableTitlesY.push_back("<n_{Bin}>");
     minX.push_back(  0.0);
     maxX.push_back(20.0);
-    minY.push_back(  1.0);
+    minY.push_back(  0.010);
     maxY.push_back(10000.0);
 
 
@@ -377,6 +378,7 @@ int PlotGeometry()
     eventClassNames.push_back("CGGA_bGeq10Lt12");   eventClassTitles.push_back("10<b<12 fm");
 
     eventClassNames.push_back("CGGA_bGeq12Lt16");   eventClassTitles.push_back("12<b<16 fm");
+    eventClassNames.push_back("CGGA_bGeq16Lt20");   eventClassTitles.push_back("16<b<20 fm");
 
     observableNames.push_back("nPart");
     observableTitles.push_back("N_{part}");
@@ -384,8 +386,8 @@ int PlotGeometry()
     observableTitlesY.push_back("Counts");
     minX.push_back(  0.0);
     maxX.push_back(500.0);
-    minY.push_back(  1.0);
-    maxY.push_back(400000.0);
+    minY.push_back(  1.0E-6);
+    maxY.push_back(20.0);
 
     observableNames.push_back("nBinary");
     observableTitles.push_back("N_{Bin}");
@@ -393,8 +395,8 @@ int PlotGeometry()
     observableTitlesY.push_back("Counts");
     minX.push_back(  0.0);
     maxX.push_back(2500.0);
-    minY.push_back(  1.0);
-    maxY.push_back(100000.0);
+    minY.push_back(  1.0E-6);
+    maxY.push_back(20.0);
 
     graphConfigurations = GraphConfiguration::createConfigurationPalette(eventClassNames.size(),1);
     for (unsigned int iObservable = 0; iObservable<observableNames.size();iObservable++)
@@ -412,6 +414,7 @@ int PlotGeometry()
         TH1 * h =  (TH1*) inputFiles[0]->Get(histoName);
         if (h)
           {
+          h->Scale(1.0/1.0E6);
           histograms.push_back(h);
           titles.push_back(eventClassTitles[iEventClass]);
           }
@@ -424,7 +427,7 @@ int PlotGeometry()
       plotters[0]->plot(canvasName,landscapeLogY,graphConfigurations,
                         observableTitlesX[iObservable], minX[iObservable], maxX[iObservable],
                         observableTitlesY[iObservable], minY[iObservable], maxY[iObservable],
-                        histograms,titles,0.5, 0.55, 0.65, 0.85, 0.03);
+                        histograms,titles,0.5, 0.57, 0.65, 0.85, 0.035);
       }
     }
 
