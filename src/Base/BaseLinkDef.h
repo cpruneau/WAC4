@@ -8,6 +8,7 @@
 #pragma link C++ class CanvasCollection+;
 #pragma link C++ class CanvasConfiguration+;
 #pragma link C++ class EnhancedGraph+;
+#pragma link C++ class DataGraph+;
 #pragma link C++ class Factory+;
 #pragma link C++ class Factory<Particle>+;
 

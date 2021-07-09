@@ -77,6 +77,8 @@ void Task::initialize()
   if (isTaskOk() && taskConfiguration->loadHistograms)   loadHistograms();
   if (isTaskOk() && taskConfiguration->createHistograms)
     {
+    unsigned int nEventFilters = eventFilters.size();
+    if (nEventFilters>0)  nFilteredEventsAccepted.assign(nEventFilters,0.0);
     if (reportInfo("Task",getName(),"initialize()")) cout << "eventCountHistos" << endl;
     eventCountHistos = new EventCountHistos(getName(),getReportLevel());
     if (reportInfo("Task",getName(),"initialize()")) cout << "eventCountHistos" << endl;
@@ -245,7 +247,7 @@ void Task::loadHistograms()
   TFile * inputFile;
   TString inputFileName = taskConfiguration->getInputRootFileName();
   if (reportInfo("Task",getName(),"loadHistograms()")) cout << "Opening input file: " << inputFileName << endl;
-  inputFile = new TFile(inputFileName,"OLD");
+  inputFile = new TFile(inputFileName,"READ");
   if (!inputFile)
     {
     if (reportError("Task",getName(),"loadHistograms()")) cout << "Could not open input file:" << inputFileName << endl;

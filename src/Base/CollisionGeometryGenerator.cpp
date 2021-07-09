@@ -178,7 +178,6 @@ void CollisionGeometryGenerator::execute()
     {
     event.printProperties(cout);
     }
-  incrementEventAccepted();
   if (reportEnd("CollisionGeometryGenerator",getName(),"execute()"))
     ;
 }

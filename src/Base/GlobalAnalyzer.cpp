@@ -58,7 +58,6 @@ void GlobalAnalyzer::createHistograms()
   GlobalAnalyzerConfiguration * ac = (GlobalAnalyzerConfiguration *) getConfiguration();
   unsigned int nEventFilters    = 1;
   unsigned int nParticleFilters = particleFilters.size();
-  nFilteredEventsAccepted.assign(nEventFilters,0.0);
   if (reportInfo("GlobalAnalyzer",getName(),"createHistograms()"))
     {
     cout << "Creating Histograms for..."  << endl;
@@ -84,7 +83,6 @@ void GlobalAnalyzer::loadHistograms(TFile * inputFile)
     ;
   GlobalAnalyzerConfiguration * ac = (GlobalAnalyzerConfiguration *) getConfiguration();
   unsigned int nEventFilters    = 1;
-  nFilteredEventsAccepted.assign(nEventFilters,0.0);
   TString prefixName    = getName();
   TString evtFilterName = eventFilters[0]->getName();
   TString histoName;
@@ -103,8 +101,7 @@ void GlobalAnalyzer::execute()
   incrementEventProcessed();
   Event * event = eventStreams[0];
   if (!eventFilters[0]->accept(*event)) return;
-  incrementEventAccepted(); // count eventStreams used to fill histograms and for scaling at the end...
-  nFilteredEventsAccepted[0]++;
+  incrementEventAccepted(0); // count eventStreams used to fill histograms and for scaling at the end...
   resetParticleCounters();
   GlobalAnalyzerConfiguration * ac = (GlobalAnalyzerConfiguration *) getConfiguration();
   EventProperties & ep = * event->getEventProperties();

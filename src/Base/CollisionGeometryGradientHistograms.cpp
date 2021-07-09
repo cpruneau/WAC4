@@ -60,7 +60,7 @@ void CollisionGeometryGradientHistograms::loadHistograms(TFile * inputFile)
 void CollisionGeometryGradientHistograms::getRadiusAndGradient(double x, double y, double & radius, double & gx, double & gy)
 {
   int iX = h_radius->GetXaxis()->FindBin(x);
-  int iY = h_radius->GetXaxis()->FindBin(x);
+  int iY = h_radius->GetYaxis()->FindBin(y);
   radius = h_radius->GetBinContent(iX,iY);
   gx     = h_gx->GetBinContent(iX,iY);
   gy     = h_gy->GetBinContent(iX,iY);

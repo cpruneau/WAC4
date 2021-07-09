@@ -84,7 +84,6 @@ void HadronGasGeneratorTask::execute()
   if (reportNoOps("HadronGasGeneratorTask",getName(),"execute()"))
     ;
   incrementEventProcessed();
-  incrementEventAccepted();
   particleFactory->reset();
   eventStreams[0]->reset();
   resetParticleCounters();

@@ -42,7 +42,6 @@ void ParticleDecayerTask::execute()
   if (reportDebug("ParticleDecayerTask",getName(),"execute()"))
     cout << "---1---" << endl;
   incrementEventProcessed();
-  incrementEventAccepted();
   if (reportDebug("ParticleDecayerTask",getName(),"execute()"))
     cout << "---2---" << endl;
   Event & event = * eventStreams[0];

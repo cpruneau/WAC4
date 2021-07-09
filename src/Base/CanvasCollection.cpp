@@ -63,7 +63,16 @@ void CanvasCollection::createDirectory(const TString & dirName)
 TCanvas * CanvasCollection::createCanvas(const TString & canvasName, const CanvasConfiguration & canvasConfig, int inc)
 {
   int xInc = inc*getCollectionSize();
-  TCanvas * canvas = new TCanvas(canvasName,canvasName,
+//  cout << "   canvasName : " << canvasName << endl;
+//  cout << "            x : " << canvasConfig.x << endl;
+//  cout << "            y : " << canvasConfig.y << endl;
+//  cout << "        width : " << canvasConfig.width << endl;
+//  cout << "       height : " << canvasConfig.height << endl;
+//  cout << "  rightMargin : " << canvasConfig.rightMargin << endl;
+//  cout << "   leftMargin : " << canvasConfig.leftMargin << endl;
+//  cout << " bottomMargin : " << canvasConfig.bottomMargin << endl;
+//  cout << "    topMargin : " << canvasConfig.topMargin << endl;
+    TCanvas * canvas = new TCanvas(canvasName,canvasName,
                                  canvasConfig.x+xInc,canvasConfig.y,canvasConfig.width,canvasConfig.height);
   canvas->SetLogx(canvasConfig.logx);
   canvas->SetLogy(canvasConfig.logy);

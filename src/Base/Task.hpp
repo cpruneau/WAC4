@@ -536,9 +536,10 @@ public:
   //!
   //! Increment the number of event accepted (and used, say, to increment/fill histograms) by this task instance.
   //!
-  inline void incrementEventAccepted()
+  inline void incrementEventAccepted(unsigned int eventFilterIndex)
   {
     ++nEventAccepted;
+    if (nFilteredEventsAccepted.size()>0) nFilteredEventsAccepted[eventFilterIndex] += 1;
   }
 
   //!

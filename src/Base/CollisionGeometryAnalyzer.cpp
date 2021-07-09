@@ -38,7 +38,7 @@ void CollisionGeometryAnalyzer::createHistograms()
   CollisionGeometryConfiguration * config = (CollisionGeometryConfiguration *) getConfiguration();
   TString prefixName = getName(); prefixName += "_";
   unsigned int nEventFilters    = eventFilters.size();
-  nFilteredEventsAccepted.assign(nEventFilters,0.0);
+
   if (reportInfo("CollisionGeometryAnalyzer",getName(),"createHistograms()"))
     {
     cout << "Creating Histograms for..."  << endl;
@@ -67,7 +67,6 @@ void CollisionGeometryAnalyzer::loadHistograms(TFile * inputFile)
   CollisionGeometryConfiguration * config = (CollisionGeometryConfiguration *) getConfiguration();
   TString prefixName = getName(); prefixName += "_";
   unsigned int nEventFilters    = eventFilters.size();
-  nFilteredEventsAccepted.assign(nEventFilters,0.0);
   if (reportInfo("CollisionGeometryAnalyzer",getName(),"loadHistograms(TFile * inputFile)"))
     {
     cout << "Loading Histograms for..."  << endl;
@@ -98,8 +97,7 @@ void CollisionGeometryAnalyzer::execute()
     {
     if (eventFilters[iEventFilter]->accept(event))
       {
-      incrementEventAccepted(); // count eventStreams used to fill histograms and for scaling at the end...
-      nFilteredEventsAccepted[iEventFilter]++;
+      incrementEventAccepted(iEventFilter); // count eventStreams used to fill histograms and for scaling at the end...
       CollisionGeometryHistograms * histos = (CollisionGeometryHistograms *) histograms[iEventFilter];
       histos->fill(event,1.0);
       }

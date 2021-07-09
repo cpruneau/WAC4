@@ -47,6 +47,5 @@ void EventVertexRandomizerTask::execute()
     particle->shift(eventX,eventY,eventZ,eventT);
     }
   incrementEventProcessed();
-  incrementEventAccepted();
 }
 

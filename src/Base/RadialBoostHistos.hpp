@@ -23,7 +23,7 @@ public:
   virtual ~RadialBoostHistos();
   virtual void createHistograms();
   virtual void loadHistograms(TFile * inputFile);
-  virtual void fill(double r, double phi, double beta, double weight);
+  virtual void fill(double x, double y, double r, double phi, double beta, double weight);
 
   ////////////////////////////////////////////////////////////////////////////
   // Data Members - Histograms
@@ -31,6 +31,7 @@ public:
   TH1 * h_phi;
   TH1 * h_r;
   TH1 * h_beta;
+  TH2 * h_xy;
 
   ClassDef(RadialBoostHistos,0)
 
