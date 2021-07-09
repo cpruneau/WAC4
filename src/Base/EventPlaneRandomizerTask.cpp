@@ -38,6 +38,5 @@ void EventPlaneRandomizerTask::execute()
     particle->getMomentum().RotateZ(eventAngle);
     }
   incrementEventProcessed();
-  incrementEventAccepted();
 }
 

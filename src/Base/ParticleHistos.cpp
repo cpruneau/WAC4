@@ -21,6 +21,7 @@ h_n1_pt(nullptr),
 h_n1_ptXS(nullptr),
 h_n1_eta(nullptr),
 h_n1_phi(nullptr),
+h_n1_ptPhi(nullptr),
 h_n1_ptEta(nullptr),
 h_n1_phiEta(nullptr),
 h_n1_ptPhiEta(nullptr),
@@ -58,6 +59,7 @@ void ParticleHistos::createHistograms()
   h_n1_pt      = createHistogram(bn+TString("n1_pt"),         ac.nBins_pt,  ac.min_pt,  ac.max_pt,  "p_{T}","N", true,true,true,false);
   h_n1_ptXS    = createHistogram(bn+TString("n1_ptXS"),       ac.nBins_pt,  ac.min_pt,  ac.max_pt,  "p_{T}","1/p_{T} dN/p_{T}", true,true,true,false);
 
+  h_n1_ptPhi   = createHistogram(bn+TString("n1_ptPhi"),      ac.nBins_phi, ac.min_phi, ac.max_phi, ac.nBins_pt, ac.min_pt, ac.max_pt,"#phi","p_{T}","N", true,true,true,false);
 
   if (ac.fillEta)
     {
@@ -151,6 +153,7 @@ void ParticleHistos::fill(TLorentzVector & p, double weight)
   double phi   = p.Phi(); if (phi<0) phi += TMath::TwoPi();
   h_n1_pt      ->Fill(pt, weight);
   h_n1_ptXS    ->Fill(pt, weight/pt);
+  h_n1_ptPhi   ->Fill(phi, pt, weight/pt);
   if (ac.fillEta)
     {
     double eta   = p.Eta();

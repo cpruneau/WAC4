@@ -41,6 +41,7 @@ public:
   TH1 * h_n1_eta;
   TH1 * h_n1_phi;
   TH2 * h_n1_ptEta;
+  TH2 * h_n1_ptPhi;
   TH2 * h_n1_phiEta;
   TH3 * h_n1_ptPhiEta;
   TH1 * h_spt_phi;

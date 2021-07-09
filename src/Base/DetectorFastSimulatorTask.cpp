@@ -42,7 +42,6 @@ Task()
 void DetectorFastSimulatorTask::execute()
 {
   incrementEventProcessed();
-  incrementEventAccepted(); // count eventStreams used to fill histograms and for scaling at the end...
   ParticleFilter & particleFilterPrimary   = * particleFilters[0];
   ParticleFilter & particleFilterSecondary = * particleFilters[1];
   Event & event    = *eventStreams[0]; // source -- unsmeared

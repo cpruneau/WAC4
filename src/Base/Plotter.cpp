@@ -203,11 +203,11 @@ TCanvas *  Plotter::plot(int nGraphs, TString  canvasName, CanvasConfiguration *
 }
 
 
-// ================================================================================================
-// Function to plot nHists 1D histogram
-// h       : vector of nHists pointers to histograms
-// legends : vector of nHists pointers to labels used as legends in the body of the plot
-// ================================================================================================
+//!
+//! Function to plot nHists 1D histogram
+//! h       : vector of nHists pointers to histograms
+//! legends : vector of nHists pointers to labels used as legends in the body of the plot
+//!
 TCanvas *  Plotter::plot(TString  canvasName, CanvasConfiguration * cc, vector<GraphConfiguration*> gc,
                          TString  xTitle,  double xMin, double xMax,
                          TString  yTitle,  double yMin, double yMax,
@@ -319,6 +319,58 @@ TCanvas *  Plotter::plot(TString  canvasName, CanvasConfiguration * cc, vector<G
   return canvas;
 }
 
+//!
+//! Function to plot n DataGraphs on a single canvas
+//!
+TCanvas *  Plotter::plot(TString  canvasName, CanvasConfiguration * cc,
+                         TString  xTitle,  double xMin, double xMax,
+                         TString  yTitle,  double yMin, double yMax,
+                         vector<DataGraph*> graphs,
+                         double xMinLeg, double yMinLeg, double xMaxLeg, double yMaxLeg,double legendSize)
+{
+  if (reportInfo("Plotter",getName(),"plot(...)")) cout << "Creating canvas named:" << canvasName << endl;
+  TCanvas * canvas = createCanvas(canvasName,*cc);
+  graphs[0]->setTitleX(xTitle);
+  graphs[0]->setTitleY(yTitle);
+  double min = -1.0;
+  double max =  1.0;
+  unsigned int nGraphs = graphs.size();
+  if (reportInfo("Plotter",getName(),"plot(...)")) cout << "nGraphs:" << nGraphs << endl;
+
+  if (yMin < yMax)
+    {
+    min = yMin;
+    max = yMax;
+    }
+  else if (yMin >= yMax)
+    {
+    min =  1.0E100;
+    max = -1.0E100;
+    }
+    cout << "Histo: " << graphs[0]->getName() << endl;
+
+  TString plotOption;
+  for (unsigned int iGraph=0; iGraph<nGraphs; iGraph++)
+    {
+    graphs[iGraph]->draw(iGraph>0);
+    }
+  if (nGraphs<6)
+    createLegend(graphs,xMinLeg, yMinLeg, xMaxLeg, yMaxLeg,0, legendSize);
+  else
+    {
+    unsigned int n1 = nGraphs/2;
+    unsigned int n2 = nGraphs - n1;
+    vector<DataGraph*>  h1;
+    vector<DataGraph*>  h2;
+    for (unsigned int k=0; k<n1; k++) h1.push_back( graphs[k]);
+    for (unsigned int k=0; k<n2; k++) h2.push_back( graphs[n1+k]);
+    createLegend(h1,xMinLeg, yMinLeg, xMaxLeg, yMaxLeg,0, legendSize);
+    createLegend(h2,xMaxLeg, yMinLeg, 2.0*xMaxLeg-xMinLeg, yMaxLeg,0, legendSize);
+    }
+  return canvas;
+}
+
+
 
 
 
@@ -396,19 +448,35 @@ TLegend * Plotter::createLegend(int nGraphs, TH1 ** h, TString ** legendTexts,
   return legend;
 }
 
-TLegend * Plotter::createLegend(vector<TH1*> h,vector<TString> legendTexts,
-                       float x1, float y1, float x2, float y2, int fontType, float fontSize, bool doDraw)
-{
-  if (reportDebug("Plotter",getName(),"createLegend(...)"))
-    ;
-  TLegend *legend = createLegend(x1,y1,x2,y2,fontType,fontSize);
-  for (unsigned int iGraph=0; iGraph<h.size(); iGraph++)
-    {
-    legend->AddEntry(h[iGraph],legendTexts[iGraph]);
-    }
-  if (doDraw) legend->Draw();
-  return legend;
-}
+
+
+  TLegend * Plotter::createLegend(vector<TH1*> h,vector<TString> legendTexts,
+                         float x1, float y1, float x2, float y2, int fontType, float fontSize, bool doDraw)
+  {
+    if (reportDebug("Plotter",getName(),"createLegend(...)"))
+      ;
+    TLegend *legend = createLegend(x1,y1,x2,y2,fontType,fontSize);
+    for (unsigned int iGraph=0; iGraph<h.size(); iGraph++)
+      {
+      legend->AddEntry(h[iGraph],legendTexts[iGraph]);
+      }
+    if (doDraw) legend->Draw();
+    return legend;
+  }
+
+  TLegend * Plotter::createLegend(vector<DataGraph*> graphs,
+                         float x1, float y1, float x2, float y2, int fontType, float fontSize, bool doDraw)
+  {
+    if (reportDebug("Plotter",getName(),"createLegend(...)"))
+      ;
+    TLegend *legend = createLegend(x1,y1,x2,y2,fontType,fontSize);
+    for (unsigned int iGraph=0; iGraph<graphs.size(); iGraph++)
+      {
+      legend->AddEntry(graphs[iGraph]->getDataGraph(),graphs[iGraph]->getLegendText());
+      }
+    if (doDraw) legend->Draw();
+    return legend;
+  }
 
 ////////////////////////////////////////////////////
 // Create simple line
@@ -448,7 +516,7 @@ void Plotter::setProperties(TH1 * h, const GraphConfiguration & graphConfigurati
 {
   if (reportDebug("Plotter",getName(),"setProperties(TH1 * h,...)"))
     {
-    cout << "Setting properties of histo: " << h->GetTitle() << endl;
+    cout << "Setting properties of histo: " << h->GetName() << endl;
     }
 
   h->SetLineColor(graphConfiguration.lineColor);

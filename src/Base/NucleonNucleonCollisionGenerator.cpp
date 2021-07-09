@@ -13,7 +13,6 @@ Task()
 void NucleonNucleonCollisionGenerator::generate(Particle * parent)
 {
   incrementEventProcessed();
-  if (parent!=nullptr)  incrementEventAccepted();
 }
 
 NucleonNucleonCollisionGenerator * NucleonNucleonCollisionGenerator::defaultNNCollisionGenerator = nullptr;

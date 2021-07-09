@@ -121,8 +121,6 @@ void PythiaEventGenerator::execute()
     ep.multiplicity      = getNParticlesAccepted(); // nominal multiplicity in the reference range
     ep.particlesCounted  = getNParticlesCounted();
     ep.particlesAccepted = getNParticlesAccepted();
-    incrementEventAccepted();
-    nFilteredEventsAccepted[0]++;
     }
   else
     {
@@ -134,8 +132,6 @@ void PythiaEventGenerator::execute()
 
     // May skip this event if it does not satisfy the event cut.
     if (!eventFilters[0]->accept(event)) return;
-    incrementEventAccepted();
-    nFilteredEventsAccepted[0]++;
     if (event.getParticleCount() < 1)
       {
       return;
@@ -153,7 +149,6 @@ void PythiaEventGenerator::execute()
     ep.multiplicity      = getNParticlesAccepted(); // nominal multiplicity in the reference range
     ep.particlesCounted  = getNParticlesCounted();
     ep.particlesAccepted = getNParticlesAccepted();
-    incrementEventAccepted();
     }
 }
 

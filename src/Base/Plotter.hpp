@@ -12,6 +12,7 @@
 #include "CanvasCollection.hpp"
 #include "CanvasConfiguration.hpp"
 #include "GraphConfiguration.hpp"
+#include "DataGraph.hpp"
 #include "MessageLogger.hpp"
 #include "TStyle.h"
 #include "TH1.h"
@@ -81,7 +82,11 @@ public:
                   double xMinLeg, double yMinLeg, double xMaxLeg, double yMaxLeg,
                   double legendSize);
 
-  
+  TCanvas * plot(TString  canvasName, CanvasConfiguration * cc,
+                 TString  xTitle,  double xMin, double xMax,
+                 TString  yTitle,  double yMin, double yMax,
+                 vector<DataGraph*> graphs,
+                 double xMinLeg, double yMinLeg, double xMaxLeg, double yMaxLeg,double legendSize);
 
   ////////////////////////////////////////////////////////////////////////
   // Setting Histogram Properties
@@ -102,6 +107,9 @@ public:
                          float x1, float y1, float x2, float y2, int fontType, float fontSize, bool doDraw=true);
   TLegend * createLegend(vector<TH1*> h,vector<TString> legendTexts,
                          float x1, float y1, float x2, float y2, int fontType, float fontSize, bool doDraw=true);
+
+  TLegend * createLegend(vector<DataGraph*> graphs,float x1, float y1, float x2, float y2, int fontType, float fontSize, bool doDraw=true);
+
 
   TLine   * createLine(float x1, float y1, float x2, float y2, int style, int color, int width, bool doDraw=true);
   TArrow  * createArrow(float x1, float y1, float x2, float y2, float arrowSize, Option_t* option, int style, int color, int width, bool doDraw=true);

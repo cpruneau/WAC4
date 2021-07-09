@@ -80,7 +80,7 @@ void ParticlePairAnalyzer::createHistograms()
   bn += "_";
   unsigned int nEventFilters    = eventFilters.size();
   unsigned int nParticleFilters = particleFilters.size();
-  nFilteredEventsAccepted.assign(nEventFilters,0.0);
+ 
   Histograms * histos;
   if (reportInfo("ParticlePairAnalyzer",getName(),"createHistograms()"))
     {
@@ -222,8 +222,7 @@ void ParticlePairAnalyzer::execute()
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     if (!eventFilters[iEventFilter]->accept(event)) continue;
-    incrementEventAccepted(); // count eventStreams used to fill histograms and for scaling at the end...
-    nFilteredEventsAccepted[iEventFilter]++;
+    incrementEventAccepted(iEventFilter); // count eventStreams used to fill histograms and for scaling at the end...
     vector<double> nAccepted(nParticleFilters,0.0);
     vector<double> totalEnergy(nParticleFilters,0.0);
 

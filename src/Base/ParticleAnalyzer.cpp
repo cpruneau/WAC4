@@ -45,7 +45,7 @@ void ParticleAnalyzer::createHistograms()
   TString prefixName = getName(); prefixName += "_";
   unsigned int nEventFilters    = eventFilters.size();
   unsigned int nParticleFilters = particleFilters.size();
-  nFilteredEventsAccepted.assign(nEventFilters,0.0);
+  
   if (reportInfo("ParticleAnalyzer",getName(),"createHistograms()"))
     {
     cout << "Creating Histograms for..."  << endl;
@@ -116,8 +116,7 @@ void ParticleAnalyzer::execute()
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     if (!eventFilters[iEventFilter]->accept(*event)) continue;
-    incrementEventAccepted();
-    nFilteredEventsAccepted[iEventFilter]++;
+    incrementEventAccepted(iEventFilter);
     vector<double> nAccepted(nParticleFilters,0.0);
     vector<double> totalEnergy(nParticleFilters,0.0);
     unsigned int nParticles = event->getNParticles();
