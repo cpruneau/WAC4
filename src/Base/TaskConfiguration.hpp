@@ -11,10 +11,12 @@
 #ifndef WAC_TaskConfiguration
 #define WAC_TaskConfiguration
 #include <ostream>
+#include <vector>
 #include "TObject.h"
 #include "TString.h"
 using std::ostream;
 using std::endl;
+using std::vector;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TaskConfiguration of a given object or task
@@ -51,6 +53,7 @@ public:
   bool createHistograms;
   bool scaleHistograms;
   bool calculateDerivedHistograms;
+  bool calculateCombinedHistograms;
   bool saveHistograms;
   bool resetHistograms;
   bool clearHistograms;
@@ -95,6 +98,7 @@ public:
   TString eventFilterTitle;     // e.g., MultGt2Lt40
   TString particleFilterTitle;  // e.g., HA, HC, HP, PiP, PiM
 
+  vector< vector<unsigned int> > combinations;
 
 private:
 

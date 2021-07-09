@@ -181,20 +181,30 @@ void GlobalAnalyzer::execute()
 
 void GlobalAnalyzer::scaleHistograms()
 {
+  double scalingFactor;
   unsigned int nEventFilters    = eventFilters.size();
   unsigned int nParticleFilters = particleFilters.size();
-  if (reportInfo("GlobalAnalyzer",getName(),"scaleHistograms()"))
+  if (nFilteredEventsAccepted[0]>0)
     {
-    cout << endl << "Accepted number of eventStreams: " <<  nEventAccepted << endl;
-    cout << endl << "            nEventFilters: " <<  nEventFilters << endl;
-    cout << endl << "         nParticleFilters: " <<  nParticleFilters << endl;
-    cout << endl << "        histograms.size(): " <<  histograms.size() << endl;
+    scalingFactor = 1.0/double(nFilteredEventsAccepted[0]);
+    if (reportInfo("GlobalAnalyzer",getName(),"scaleHistograms()"))
+      {
+      cout << endl;
+      cout << "              Accepted number of events: " <<  nEventAccepted << endl;
+      cout << "                          nEventFilters: " <<  nEventFilters << endl;
+      cout << "                       nParticleFilters: " <<  nParticleFilters << endl;
+      cout << "                      histograms.size(): " <<  histograms.size() << endl;
+      cout << "               derivedHistograms.size(): " <<  derivedHistograms.size() << endl;
+      cout << "              combinedHistograms.size(): " <<  combinedHistograms.size() << endl;
+      cout << "             nFilteredEventsAccepted[0]: " <<  nFilteredEventsAccepted[0]<< endl;
+      cout << "                          scalingFactor: " <<  scalingFactor << endl;
+      }
+    histograms[0]->scale(scalingFactor);
+    if (reportInfo("GlobalAnalyzer",getName(),"scaleHistograms()")) cout << "Completed successfully." << endl;
     }
-  double factor = 1.0/double(nFilteredEventsAccepted[0]);
-  histograms[0]->scale(factor);
-  if (reportInfo("GlobalAnalyzer",getName(),"scaleHistograms()"))
+  else
     {
-    cout << " Completed." << endl;
+      if (reportWarning("GlobalAnalyzer",getName(),"scaleHistograms()")) cout << "nFilteredEventsAccepted[0] == 0. No scaling performed." << endl;
     }
 }
 

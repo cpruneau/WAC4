@@ -54,8 +54,6 @@ public:
   bool computeP2;
   bool computeG2;
   bool computeBF;
-  bool calculateCombinedHistograms;
-  vector< vector<unsigned int> > combinations;
 
 ClassDef(ParticlePairAnalyzerConfiguration,0)
 };

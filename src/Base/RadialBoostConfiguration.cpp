@@ -29,6 +29,7 @@ TaskConfiguration(),
 {
   useEventStream0   = true;
   useParticles      = true;
+  loadHistograms    = true;
   createHistograms  = true;
   saveHistograms    = true;
 }

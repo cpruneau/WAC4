@@ -4,6 +4,8 @@ lib/
 build/
 data/ 
 documentation/
+presentations/
+publishedData/
 src/CMakeFiles/
 src/HadronGas/CMakeFiles/
 src/Base/CMakeFiles/

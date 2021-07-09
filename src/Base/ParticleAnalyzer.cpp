@@ -71,9 +71,6 @@ void ParticleAnalyzer::createHistograms()
     ;
 }
 
-//pythia.readString("310:mayDecay = no");//K0s decay off
-//pythia.readString("ParticleDecays:limitTau0 = on");
- //pythia.readString("ParticleDecays:tau0Max = 10");
 
 void ParticleAnalyzer::loadHistograms(TFile * inputFile)
 {

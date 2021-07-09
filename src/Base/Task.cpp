@@ -68,7 +68,7 @@ void Task::initialize()
         }
       postTaskFatal();
       return;
-      } 
+      }
     }
   if (isTaskOk() && taskConfiguration->useEventStream0)  eventStreams.push_back(Event::getEventStream(0));
   if (isTaskOk() && taskConfiguration->useEventStream1)  eventStreams.push_back(Event::getEventStream(1));
@@ -175,11 +175,15 @@ void Task::subsampleAnalysis()
 
 void Task::reset()
 {
+  if (reportInfo("Task",getName(),"reset(...)"))
+    cout << "Task reset called" << endl;
   nEventProcessed = 0;
   nEventAccepted  = 0;
   for (unsigned int k=0; k<nFilteredEventsAccepted.size(); k++) nFilteredEventsAccepted[k] = 0;
   if (isTaskOk())   resetHistograms();
- }
+  if (reportInfo("Task",getName(),"reset(...)"))
+    cout << "Task reset completed" << endl;
+}
 
 void Task::clear()
 {
@@ -257,16 +261,18 @@ void Task::loadHistograms()
 
 void Task::resetHistograms()
 {
-  eventCountHistos->reset();
-  for (unsigned int iHisto=0; iHisto<histograms.size(); iHisto++) histograms[iHisto]->reset();
-  for (unsigned int iHisto=0; iHisto<histograms.size(); iHisto++) histograms[iHisto]->reset();
+  if (eventCountHistos) eventCountHistos->reset();
+  for (unsigned int iHisto=0; iHisto<histograms.size();         iHisto++) histograms[iHisto]->reset();
+  for (unsigned int iHisto=0; iHisto<derivedHistograms.size();  iHisto++) derivedHistograms[iHisto]->reset();
+  for (unsigned int iHisto=0; iHisto<combinedHistograms.size(); iHisto++) combinedHistograms[iHisto]->reset();
 }
 
 void Task::clearHistograms()
 {
-  eventCountHistos->reset();
-  for (unsigned int iHisto=0; iHisto<histograms.size(); iHisto++) histograms[iHisto]->reset();
-  for (unsigned int iHisto=0; iHisto<derivedHistograms.size(); iHisto++) derivedHistograms[iHisto]->reset();
+  if (eventCountHistos) eventCountHistos->reset();
+  for (unsigned int iHisto=0; iHisto<histograms.size();         iHisto++) histograms[iHisto]->reset();
+  for (unsigned int iHisto=0; iHisto<derivedHistograms.size();  iHisto++) derivedHistograms[iHisto]->reset();
+  for (unsigned int iHisto=0; iHisto<combinedHistograms.size(); iHisto++) combinedHistograms[iHisto]->reset();
 }
 
 void Task::completeFill()
@@ -277,7 +283,7 @@ void Task::completeFill()
     }
   for (unsigned int k=0; k<histograms.size(); k++ )
     {
-      histograms[k]->completeFill();
+    histograms[k]->completeFill();
     }
   if (reportInfo("Task",getName(),"completeFill()"))
     {
@@ -287,32 +293,48 @@ void Task::completeFill()
 
 void Task::scaleHistograms()
 {
+  double scalingFactor;
   unsigned int nEventFilters    = eventFilters.size();
   unsigned int nParticleFilters = particleFilters.size();
   if (reportInfo("Task",getName(),"scaleHistograms()"))
     {
-    cout << "Scaling histograms" << endl << "Accumulated statistics:" << endl;
+    cout << endl;
+    cout << "              Accepted number of events: " <<  nEventAccepted << endl;
+    cout << "                          nEventFilters: " <<  nEventFilters << endl;
+    cout << "                       nParticleFilters: " <<  nParticleFilters << endl;
+    cout << "                      histograms.size(): " <<  histograms.size() << endl;
+    cout << "               derivedHistograms.size(): " <<  derivedHistograms.size() << endl;
+    cout << "              combinedHistograms.size(): " <<  combinedHistograms.size() << endl;
+    cout << "--------------   Accumulated statistics: ----------------------------------" << endl;
     printEventCount();
     }
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
-    if (nFilteredEventsAccepted[iEventFilter]<1)
+    if (nFilteredEventsAccepted[iEventFilter]>1)
       {
-      if (reportWarning("Task",getName(),"scaleHistograms()"))
-        cout << "No events accumulated for EventFilter " << iEventFilter << " -- No scaling will be performed for this set." << endl;
+      scalingFactor = 1.0/double(nFilteredEventsAccepted[iEventFilter]);
+      if (reportInfo("Task",getName(),"scaleHistograms()"))
+        {
+        cout << endl;
+        cout << "                                    iEventFilter: " <<  iEventFilter<< endl;
+        cout << "           nFilteredEventsAccepted[iEventFilter]: " <<  nFilteredEventsAccepted[iEventFilter]<< endl;
+        cout << "                                   scalingFactor: " <<  scalingFactor << endl;
+        }
+      for (unsigned int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
+        {
+        histograms[iParticleFilter+iEventFilter*nParticleFilters]->scale(scalingFactor);
+        }
       }
     else
       {
-      double factor = 1.0/double(nFilteredEventsAccepted[iEventFilter]);
-      for (unsigned int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
+      if (reportWarning("Task",getName(),"scaleHistograms()"))
         {
-        histograms[iParticleFilter+iEventFilter*nParticleFilters]->scale(factor);
+        cout << endl;
+        cout << "                                    iEventFilter: " <<  iEventFilter<< endl;
+        cout << "           nFilteredEventsAccepted[iEventFilter]: " <<  nFilteredEventsAccepted[iEventFilter]<< endl;
+        cout << "                            no scaling performed: " <<  endl;
         }
       }
-    }
-  if (reportInfo("Task",getName(),"scaleHistograms()"))
-    {
-    cout << "Completed." << endl;
     }
 }
 
@@ -325,8 +347,8 @@ void Task::saveHistogramsAsText()
 
 void Task::saveHistograms()
 {
-  if (reportStart("Task",getName(),"saveHistograms()"))
-    ;
+  if (reportInfo("Task",getName(),"saveHistograms()"))
+    cout << "Saving histograms" << endl;
   TFile * outputFile;
   TString outputFileName = taskConfiguration->outputPath;
   outputFileName += taskConfiguration->rootOuputFileName;
@@ -364,24 +386,52 @@ void Task::saveHistograms()
   saveNEventAccepted(outputFile);
   if (eventCountHistos) eventCountHistos->saveHistograms(outputFile);
   else
-  {
-  if (reportWarning("Task",getName(),"saveHistograms()")) cout << "eventCountHistos is not defined and thus not saved"<< endl;
-  }
+    {
+    if (reportWarning("Task",getName(),"saveHistograms()")) cout << "eventCountHistos is not defined and thus not saved"<< endl;
+    }
+  if (reportInfo("Task",getName(),"saveHistograms()"))
+    {
+    cout << "      basic histograms:"  << histograms.size() << endl;
+    cout << "    derived histograms:"  << derivedHistograms.size() << endl;
+    cout << "   combined histograms:"  << combinedHistograms.size() << endl;
+    }
   for (unsigned int iHisto=0; iHisto<histograms.size(); iHisto++)
     {
     histograms[iHisto]->saveHistograms(outputFile);
     }
-  for (unsigned int iHisto=0; iHisto<derivedHistograms.size(); iHisto++)
+  if (taskConfiguration->calculateDerivedHistograms)
     {
-    derivedHistograms[iHisto]->saveHistograms(outputFile);
-    }
-  for (unsigned int iHisto=0; iHisto<combinedHistograms.size(); iHisto++)
-    {
-    combinedHistograms[iHisto]->saveHistograms(outputFile);
+    for (unsigned int iHisto=0; iHisto<derivedHistograms.size(); iHisto++)
+      {
+      derivedHistograms[iHisto]->saveHistograms(outputFile);
+      if (reportInfo("Task",getName(),"saveHistograms()"))
+        {
+        cout << " done w/ iHisto=" <<  iHisto << endl;
+        }
+      }
+    if (taskConfiguration->calculateCombinedHistograms)
+      {
+      if (reportInfo("Task",getName(),"saveHistograms()"))
+        {
+        cout << "Saving combined histograms. n=combinedHistograms.size()" << endl;
+        }
+      for (unsigned int iHisto=0; iHisto<combinedHistograms.size(); iHisto++)
+        {
+        if (reportInfo("Task",getName(),"saveHistograms()"))
+          {
+          cout << " iHisto=" <<  iHisto << endl;
+          }
+        combinedHistograms[iHisto]->saveHistograms(outputFile);
+        if (reportInfo("Task",getName(),"saveHistograms()"))
+          {
+          cout << " done w/ iHisto=" <<  iHisto << endl;
+          }
+        }
+      }
     }
   outputFile->Close();
-  if (reportEnd("Task",getName(),"saveHistograms()"))
-    ;
+  if (reportInfo("Task",getName(),"saveHistograms()"))
+    cout << "Completed." << endl;
 }
 
 void Task::saveNEventProcessed(TFile * outputFile)
@@ -447,7 +497,6 @@ void Task::calculateDerivedHistograms()
     }
   else
     {
-    ;
     // Derived histograms are in a distinct class
     //    for (unsigned int iHisto=0; iHisto<histograms.size(); iHisto++)
     //      {

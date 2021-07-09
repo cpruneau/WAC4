@@ -38,9 +38,7 @@ fill6D       (false),
 computeDptDpt(false),
 computeP2    (false),
 computeG2    (false),
-computeBF    (false),
-calculateCombinedHistograms(false),
-combinations()
+computeBF    (false)
 {
   validate();
 }
@@ -86,9 +84,7 @@ fill6D       ( source.fill6D ),
 computeDptDpt( source.computeDptDpt),
 computeP2    ( source.computeP2),
 computeG2    ( source.computeG2),
-computeBF    ( source.computeBF),
-calculateCombinedHistograms( source.calculateCombinedHistograms ),
-combinations( source.combinations )
+computeBF    ( source.computeBF)
 {
   // no ops
 }
@@ -135,8 +131,6 @@ ParticlePairAnalyzerConfiguration & ParticlePairAnalyzerConfiguration::operator=
     computeP2    =  source.computeP2;
     computeG2    =  source.computeG2;
     computeBF    =  source.computeBF;
-    calculateCombinedHistograms = source.calculateCombinedHistograms;
-    combinations = source.combinations;
     }
   return *this;
 }

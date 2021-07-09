@@ -30,6 +30,7 @@ loadHistograms  (false),
 createHistograms(false),
 scaleHistograms (false),
 calculateDerivedHistograms(false),
+calculateCombinedHistograms(false),
 saveHistograms  (false),
 resetHistograms (false),
 clearHistograms (false),
@@ -69,7 +70,8 @@ collisionEnergyTitle(""),
 triggerTitle(""),
 taskTypeTitle(""),
 eventFilterTitle(""),
-particleFilterTitle("")
+particleFilterTitle(""),
+combinations()
 {
   /* no ops */
 }
@@ -86,6 +88,7 @@ loadHistograms(   source.loadHistograms ),
 createHistograms( source.createHistograms ),
 scaleHistograms( source.scaleHistograms ),
 calculateDerivedHistograms( source.calculateDerivedHistograms ),
+calculateCombinedHistograms(source.calculateCombinedHistograms ),
 saveHistograms( source.saveHistograms ),
 resetHistograms( source.resetHistograms ),
 clearHistograms( source.clearHistograms ),
@@ -94,21 +97,17 @@ subsampleAnalysis( source.subsampleAnalysis ),
 partialSave( source.partialSave ),
 inputPath( source.inputPath ),
 outputPath( source.outputPath ),
-
 dataInputUsed( source.dataInputUsed ),
 dataInputPath( source.dataInputPath ),
 dataInputFileName( source.dataInputFileName ),
 dataInputTreeName( source.dataInputTreeName),
 dataInputFileMinIndex( source.dataInputFileMinIndex ),
 dataInputFileMaxIndex( source.dataInputFileMaxIndex ),
-
 dataOutputUsed(source.dataOutputUsed),
 dataOutputPath(source.dataOutputPath),
 dataOutputFileName(source.dataOutputFileName),
 dataOutputTreeName(source.dataOutputTreeName),
-
 dataConversionToWac(source.dataConversionToWac),
-
 dataSourceName( source.dataSourceName ),
 collisionSystemName( source.collisionSystemName ),
 collisionEnergyName( source.collisionEnergyName ),
@@ -125,7 +124,8 @@ collisionEnergyTitle( source.collisionEnergyTitle ),
 triggerTitle( source.triggerTitle ),
 taskTypeTitle( source.taskTypeTitle ),
 eventFilterTitle( source.eventFilterTitle ),
-particleFilterTitle( source.particleFilterTitle )
+particleFilterTitle( source.particleFilterTitle ),
+combinations( source.combinations )
 {
   /* no ops */
 }
@@ -144,7 +144,8 @@ TaskConfiguration & TaskConfiguration::operator=(const TaskConfiguration & sourc
     loadHistograms         = source.loadHistograms;
     createHistograms       = source.createHistograms;
     scaleHistograms        = source.scaleHistograms;
-    calculateDerivedHistograms = source.calculateDerivedHistograms;
+    calculateDerivedHistograms  = source.calculateDerivedHistograms;
+    calculateCombinedHistograms = source.calculateCombinedHistograms;
     saveHistograms         = source.saveHistograms;
     resetHistograms        = source.resetHistograms;
     clearHistograms        = source.clearHistograms;
@@ -176,6 +177,7 @@ TaskConfiguration & TaskConfiguration::operator=(const TaskConfiguration & sourc
     taskTypeTitle          =  source.taskTypeTitle;
     eventFilterTitle       =  source.eventFilterTitle;
     particleFilterTitle    =  source.particleFilterTitle;
+    combinations           =  source.combinations;
     }
   return *this;
 }
@@ -195,6 +197,7 @@ void TaskConfiguration::printConfiguration(ostream & os)
   << "             createHistograms: " << createHistograms << endl
   << "              scaleHistograms: " << scaleHistograms << endl
   << "   calculateDerivedHistograms: " << calculateDerivedHistograms << endl
+  << "  calculateCombinedHistograms: " << calculateCombinedHistograms << endl
   << "               saveHistograms: " << saveHistograms << endl
   << "              resetHistograms: " << resetHistograms << endl
   << "              clearHistograms: " << clearHistograms << endl

@@ -15,13 +15,12 @@
  */
 
 #include "RadialBoostTask.hpp"
+#include "CollisionGeometryGradientHistograms.hpp"
 
 ClassImp(RadialBoostTask);
 
-
-
-
 RadialBoostTask::RadialBoostTask(RadialBoostConfiguration * _configuration,
+                                 vector<EventFilter*>       _eventFilters,
                                  LogLevel                   _selectedLevel)
 :
 Task(),
@@ -57,10 +56,18 @@ void RadialBoostTask::loadHistograms(TFile * inputFile)
     ;
   RadialBoostConfiguration * ac = (RadialBoostConfiguration *) getConfiguration();
   LogLevel debugLevel = getReportLevel();
-  TString prefixName  = getName(); prefixName += "_";
-  RadialBoostHistos * histos = new RadialBoostHistos(prefixName,ac,debugLevel);
-  histos->loadHistograms(inputFile);
-  histograms.push_back(histos);
+  TString prefixName  = ac->getBaseName(); prefixName += "_";
+  unsigned int nEventFilters = eventFilters.size();
+  for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
+    {
+    TString evtFilterName = eventFilters[iEventFilter]->getName();
+    TString histoName  = prefixName;
+    histoName += evtFilterName;
+    CollisionGeometryGradientHistograms * histos = new CollisionGeometryGradientHistograms(histoName,nullptr,getReportLevel());
+    histos->createHistograms();
+    inputHistograms.push_back(histos);
+    }
+
   if (reportEnd("RadialBoostTask",getName(),"loadHistograms(TFile * inputFile)"))
     ;
 }
@@ -70,22 +77,30 @@ void RadialBoostTask::execute()
 //  if (reportInfo("RadialBoostTask",getName(),"execute()"))
 //    ;
   double beta, betax, betay;
-  double rx, ry, phi, r;
+  double rx, ry, phi, r, gx,gy;
+  unsigned int nEventFilters    = eventFilters.size();
+  unsigned int nParticleFilters = particleFilters.size();
   Event & event = * eventStreams[0];
+  for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
+    {
+    if (!eventFilters[iEventFilter]->accept(event)) continue;
+    incrementEventAccepted();
+    nFilteredEventsAccepted[iEventFilter]++;
+    CollisionGeometryGradientHistograms * cggh = inputHistograms[iEventFilter];
   unsigned int nParticles = event.getNParticles();
   for (unsigned int iParticle=0; iParticle<nParticles; iParticle++)
   {
 
   Particle & particle = * event.getParticleAt(iParticle);
-  if (particle.isLive() || particle.isInteraction())
+  if (particle.isLive() || particle.isInteraction() )
     {
     TLorentzVector & position = particle.getPosition();
     rx  = position.X(); // units are fm
     ry  = position.Y();
     r   = sqrt(rx*rx+ry*ry);
-    if (r>30.0) continue;
+    cggh->getRadiusAndGradient(rx,ry, r,gx,gy);
     phi = 0.0;
-    if (r > 1E-6) phi = atan2(ry,rx);
+    if (r > 1E-6) phi = atan2(gy,gx);
     if (phi<0) phi += TMath::TwoPi();
     beta = param_a * TMath::Power(r, param_b);
     if (beta > betaMaximum) beta = betaMaximum;

@@ -176,7 +176,7 @@ void ParticlePairDerivedHistos::createHistograms()
       }
     }
 
-  if (reportDebug("ParticlePairDerivedHistos",getName(),"createHistograms()")) cout << endl << "Completed." << endl;
+  if (reportInfo("ParticlePairDerivedHistos",getName(),"createHistograms()")) cout << endl << "Completed." << endl;
 }
 
 void ParticlePairDerivedHistos::loadHistograms(TFile * inputFile)

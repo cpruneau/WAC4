@@ -22,6 +22,7 @@ class RadialBoostTask : public Task
 public:
 
   RadialBoostTask(RadialBoostConfiguration * _configuration,
+                  vector<EventFilter*>       _eventFilters,
                   LogLevel                   _selectedLevel=Info);
   virtual ~RadialBoostTask() {}
   virtual void execute();

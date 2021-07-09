@@ -34,8 +34,8 @@ public:
                         SpeciesSelection  pidSelected=AllSpecies,
                         ChargeSelection   chargeSelected=Charged,
                         StatusSelection   statusSelected=Live,
-                        double            minPt = 0.050,
-                        double            maxPt = 1000.0);
+                        double            minPt = 0.001,
+                        double            maxPt = 50.0);
   ParticleFilterAliceV0(const ParticleFilterAliceV0 & otherFilter);
   ParticleFilterAliceV0 & operator=( const ParticleFilterAliceV0 & otherFilter);
 

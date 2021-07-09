@@ -40,18 +40,18 @@ int RunPythiaAnalysis()
   // ==================================================================================
 
   MessageLogger::LogLevel messageLevel = MessageLogger::Info; // MessageLogger::Debug; //
-  unsigned long nEventRequested   = 10000;
-  unsigned long nEventReported    = 100;
-  unsigned long nEventPartialSave = 500;
-  bool    partialSave             = false;
-  bool    subsampleAnalysis       = false;
+  unsigned long nEventRequested   = 1999999;
+  unsigned long nEventReported    = 10000;
+  unsigned long nEventPartialSave = 100000;
+  bool    partialSave             = true;
+  bool    subsampleAnalysis       = true;
   double  beamEnergy              = 7000.0; // GeV
   double  minBias                 = true; // alternative is AliceV0
   TString outputFileNameBase      = "PYTHIA_pp_7TeV_inelastic_";
   TString inputPathName           = getenv("WAC_INPUT_PATH");
   TString outputPathName          = getenv("WAC_OUTPUT_PATH");
   inputPathName  += "/PYTHIA/7TEV/";
-  outputPathName += "/PYTHIA/7TEV/V0AccTestHadronsOnly/";
+  outputPathName += "/PYTHIA/7TEV/V0AccTestHadronsOnlyWithColorReconnNoWeakDecay/";
   gSystem->mkdir(outputPathName,1);
 
   std::cout << "==================================================================================" << std::endl;
@@ -71,6 +71,28 @@ int RunPythiaAnalysis()
   pythiaOptions.push_back( new TString("Next:numberShowProcess = 0") );         // print process record n times
   pythiaOptions.push_back( new TString("Next:numberShowEvent = 0") );
   pythiaOptions.push_back( new TString("SoftQCD:inelastic = on") );             // All inelastic processes
+  pythiaOptions.push_back( new TString("ColourReconnection:reconnect = on") );
+
+  pythiaOptions.push_back( new TString("130:mayDecay = no") ); //K0s decay off
+  pythiaOptions.push_back( new TString("310:mayDecay = no") ); //K0s decay off
+  pythiaOptions.push_back( new TString("311:mayDecay = no") ); //K0  decay off
+  pythiaOptions.push_back( new TString("3112:mayDecay = no") );
+  pythiaOptions.push_back( new TString("3122:mayDecay = no") );
+  pythiaOptions.push_back( new TString("3222:mayDecay = no") );
+  pythiaOptions.push_back( new TString("3212:mayDecay = no") );
+
+  pythiaOptions.push_back( new TString("3322:mayDecay = no") );
+  pythiaOptions.push_back( new TString("3312:mayDecay = no") );
+  pythiaOptions.push_back( new TString("3334:mayDecay = no") );
+
+
+
+
+  //pythia.readString("310:mayDecay = no");//K0s decay off
+  //pythia.readString("ParticleDecays:limitTau0 = on");
+  //pythia.readString("ParticleDecays:tau0Max = 10");
+
+
   //pythiaOptions.push_back( new TString("SoftQCD:all = on") );                   // Allow total sigma = elastic/SD/DD/ND
                                                                                 // pythiaOptions.push_back(  new TString("HardQCD:all = on");
   PythiaConfiguration * pythiaConfig = new PythiaConfiguration();
@@ -91,42 +113,41 @@ int RunPythiaAnalysis()
   pythiaConfig->dataInputPath       = getenv("WAC_INPUT_DATA_PATH");
   pythiaConfig->saveHistograms      = false;
 
-  GlobalAnalyzerConfiguration * globalConfigND = new GlobalAnalyzerConfiguration();
-  globalConfigND->useEventStream0             = true;
-  globalConfigND->loadHistograms              = false;
-  globalConfigND->createHistograms            = true;
-  globalConfigND->scaleHistograms             = true;
-  globalConfigND->calculateDerivedHistograms  = false;
-  globalConfigND->saveHistograms              = true;
-  globalConfigND->forceHistogramsRewrite      = true;
-  globalConfigND->subsampleAnalysis           = subsampleAnalysis;
-  globalConfigND->partialSave                 = partialSave;
-  globalConfigND->outputPath                  = outputPathName;
-  globalConfigND->rootOuputFileName           = outputFileNameBase;
-  globalConfigND->countParticles              = true;
-  globalConfigND->setEvent                    = true;
-  globalConfigND->fillCorrelationHistos       = false;
-  globalConfigND->nBins_n  = 200;
-  globalConfigND->nBins_n2 = 50;
-  globalConfigND->min_n    = 0.0;
-  globalConfigND->max_n    = 400;
-  globalConfigND->nBins_e  = 200;
-  globalConfigND->nBins_e2 = 20;
-  globalConfigND->min_e    = 0.0;
-  globalConfigND->max_e    = 1000.0;
-  globalConfigND->nBins_q  = 200;
-  globalConfigND->nBins_q2 = 20;
-  globalConfigND->min_q    = -100.0;
-  globalConfigND->max_q    = 100.0;
-  globalConfigND->nBins_b  = 200;
-  globalConfigND->nBins_b2 = 200;
-  globalConfigND->min_b    = -20.0;
-  globalConfigND->max_b    = 20.0;
-  globalConfigND->validate();
-  GlobalAnalyzerConfiguration * globalConfigWD = new GlobalAnalyzerConfiguration(*globalConfigND);
-  globalConfigWD->setEvent = false;
-  GlobalAnalyzerConfiguration * globalConfigBS = new GlobalAnalyzerConfiguration(*globalConfigND);
-
+  GlobalAnalyzerConfiguration * globalConfig1 = new GlobalAnalyzerConfiguration();
+  globalConfig1->useEventStream0             = true;
+  globalConfig1->loadHistograms              = false;
+  globalConfig1->createHistograms            = true;
+  globalConfig1->scaleHistograms             = true;
+  globalConfig1->calculateDerivedHistograms  = false;
+  globalConfig1->saveHistograms              = true;
+  globalConfig1->forceHistogramsRewrite      = true;
+  globalConfig1->subsampleAnalysis           = subsampleAnalysis;
+  globalConfig1->partialSave                 = partialSave;
+  globalConfig1->outputPath                  = outputPathName;
+  globalConfig1->rootOuputFileName           = outputFileNameBase;
+  globalConfig1->countParticles              = true;
+  globalConfig1->setEvent                    = true;
+  globalConfig1->fillCorrelationHistos       = true;
+  globalConfig1->nBins_n  = 400;
+  globalConfig1->nBins_n2 = 400;
+  globalConfig1->min_n    = -0.5;
+  globalConfig1->max_n    = 399.5;
+  globalConfig1->nBins_e  = 200;
+  globalConfig1->nBins_e2 = 20;
+  globalConfig1->min_e    = 0.0;
+  globalConfig1->max_e    = 1000.0;
+  globalConfig1->nBins_q  = 200;
+  globalConfig1->nBins_q2 = 20;
+  globalConfig1->min_q    = -100.0;
+  globalConfig1->max_q    = 100.0;
+  globalConfig1->nBins_b  = 200;
+  globalConfig1->nBins_b2 = 200;
+  globalConfig1->min_b    = -20.0;
+  globalConfig1->max_b    = 20.0;
+  globalConfig1->validate();
+  GlobalAnalyzerConfiguration * globalConfig2 = new GlobalAnalyzerConfiguration(*globalConfig1);
+  globalConfig2->setEvent               = false;
+  globalConfig2->fillCorrelationHistos  = true;
 
   ParticleAnalyzerConfiguration * p1ConfigND = new ParticleAnalyzerConfiguration();
   p1ConfigND->useEventStream0             = true;
@@ -141,28 +162,26 @@ int RunPythiaAnalysis()
   p1ConfigND->inputPath                   = inputPathName;
   p1ConfigND->outputPath                  = outputPathName;
   p1ConfigND->rootOuputFileName           = outputFileNameBase;
-  p1ConfigND->nBins_n1                    = 120;
-  p1ConfigND->min_n1                      = 10.0;
-  p1ConfigND->max_n1                      = 12000.0;
+  p1ConfigND->nBins_n1                    = 200;
+  p1ConfigND->min_n1                      = 0.0;
+  p1ConfigND->max_n1                      = 200.0;
   p1ConfigND->nBins_eTot                  = 100;
   p1ConfigND->min_eTot                    = 0.0;
-  p1ConfigND->max_eTot                    = 1000000.0;
+  p1ConfigND->max_eTot                    = 1000.0;
 
   p1ConfigND->nBins_pt    = 200;
   p1ConfigND->min_pt      = 0.00;
-  p1ConfigND->max_pt      = 100.0;
-  p1ConfigND->nBins_eta   = 80;
-  p1ConfigND->min_eta     = -4;
-  p1ConfigND->max_eta     =  4;
-  p1ConfigND->nBins_y     = 80;
-  p1ConfigND->min_y       = -4;
-  p1ConfigND->max_y       = 4;
+  p1ConfigND->max_pt      = 10.0;
+  p1ConfigND->nBins_eta   = 20;
+  p1ConfigND->min_eta     = -1;
+  p1ConfigND->max_eta     =  1;
+  p1ConfigND->nBins_y     = 20;
+  p1ConfigND->min_y       = -1;
+  p1ConfigND->max_y       = 1;
   p1ConfigND->nBins_phi   = 36;
   p1ConfigND->min_phi     = 0.0;
   p1ConfigND->max_phi     = 2.0*3.1415927;
   p1ConfigND->validate();
-  ParticleAnalyzerConfiguration * p1ConfigWD = new ParticleAnalyzerConfiguration(*p1ConfigND);
-  ParticleAnalyzerConfiguration * p1ConfigBS = new ParticleAnalyzerConfiguration(*p1ConfigND);
 
 
   ParticlePairAnalyzerConfiguration * p2ConfigND = new ParticlePairAnalyzerConfiguration();
@@ -170,7 +189,7 @@ int RunPythiaAnalysis()
   p2ConfigND->createHistograms            = true;
   p2ConfigND->scaleHistograms             = true;
   p2ConfigND->calculateDerivedHistograms  = true;
-  p2ConfigND->calculateCombinedHistograms = true;
+  p2ConfigND->calculateCombinedHistograms = false;
   p2ConfigND->saveHistograms              = true;
   p2ConfigND->forceHistogramsRewrite      = true;
   p2ConfigND->partialSave                 = partialSave;
@@ -181,12 +200,12 @@ int RunPythiaAnalysis()
   p2ConfigND->nBins_pt    = 18;
   p2ConfigND->min_pt      = 0.200;
   p2ConfigND->max_pt      = 2.0;
-  p2ConfigND->nBins_eta   = 40;
-  p2ConfigND->min_eta     = -2;
-  p2ConfigND->max_eta     = 2;
-  p2ConfigND->nBins_y     = 40;
-  p2ConfigND->min_y       = -2;
-  p2ConfigND->max_y       = 2;
+  p2ConfigND->nBins_eta   = 20;
+  p2ConfigND->min_eta     = -1;
+  p2ConfigND->max_eta     = 1;
+  p2ConfigND->nBins_y     = 20;
+  p2ConfigND->min_y       = -1;
+  p2ConfigND->max_y       = 1;
   p2ConfigND->nBins_phi   = 36;
   p2ConfigND->min_phi     = 0.0;
   p2ConfigND->max_phi     = 2.0*3.1415927;
@@ -198,17 +217,19 @@ int RunPythiaAnalysis()
 
   vector<EventFilter*> eventFiltersPythiaGen;
   vector<EventFilter*> eventFiltersPythiaAna;
-  vector<EventFilter*> eventFiltersGlobalAna;
+  vector<EventFilter*> eventFiltersGlobalAna1;
+  vector<EventFilter*> eventFiltersGlobalAna2;
   vector<EventFilter*> eventFiltersP1Ana;
   vector<EventFilter*> eventFiltersP2Ana;
 
   int centralityOptionGeom    = 0;
   int centralityOptionPythia  = 0;
-  int centralityOptionGlobal  = 0;
-  int centralityOptionP1      = 0;
-  int centralityOptionP2      = 0;
+  int centralityOptionGlobal  = 1;
+  int centralityOptionP1      = 4;
+  int centralityOptionP2      = 4;
 
-  EventFilter * openEventFilter = new EventFilter(EventFilter::MinBias,0.0,0.0);
+  EventFilter * openEventFilter  = new EventFilter(EventFilter::MinBias,0.0,0.0);
+  EventFilter * aliceEventFilter = new EventFilterAliceV0(1.0, 1000.0, 1.0, 1000.0);
 
 
   switch (centralityOptionPythia)
@@ -221,18 +242,26 @@ int RunPythiaAnalysis()
       break;
     }
 
+  eventFiltersGlobalAna1.push_back( openEventFilter);
+
   switch (centralityOptionGlobal)
     {
       default:
       case 0: // Minimum bias only -- open wide
       {
-      eventFiltersGlobalAna.push_back( openEventFilter);
+      eventFiltersGlobalAna2.push_back( openEventFilter);
       }
       break;
 
-      case 1:  // Bins in impact parameter b
+      case 1: // ALICE V0
+      {
+      eventFiltersGlobalAna2.push_back( aliceEventFilter);
+      }
+      break;
+
+      case 2:  // Bins in impact parameter b
       vector<double> limits = { 0.0, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0};
-      eventFiltersGlobalAna = EventFilter::createEventFilterSet(EventFilter::ImpactParameter,limits);
+      eventFiltersGlobalAna2 = EventFilter::createEventFilterSet(EventFilter::ImpactParameter,limits);
       break;
     }
 
@@ -245,16 +274,16 @@ int RunPythiaAnalysis()
       }
       break;
 
-      case 1:  // Bins in impact parameter b
+      case 1: // ALICE V0 + 1 TPC Hit
       {
-      vector<double> limits = { 0.0, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0};
-      eventFiltersP1Ana = EventFilter::createEventFilterSet(EventFilter::ImpactParameter,limits);
+      eventFiltersP1Ana.push_back( aliceEventFilter);
       }
       break;
 
-      case 2:  // Min bias in V0M multiplicity
+      case 2:  // Bins in impact parameter b
       {
-      eventFiltersP1Ana.push_back( new EventFilter(EventFilter::ParticleFilter0,1.0,1000.0) );
+      vector<double> limits = { 0.0, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0};
+      eventFiltersP1Ana = EventFilter::createEventFilterSet(EventFilter::ImpactParameter,limits);
       }
       break;
 
@@ -264,7 +293,16 @@ int RunPythiaAnalysis()
       eventFiltersP1Ana = EventFilter::createEventFilterSet(EventFilter::ParticleFilter0,limits);
       }
       break;
+
+      case 4:
+      {
+      vector<double> limits = { 0.0, 4.0, 7.0, 12.0, 200.0};
+      eventFiltersP1Ana = EventFilterAliceV0::createEventFilterAliceV0Set(limits);
+      }
       break;
+
+
+
     }
 
   switch (centralityOptionP2)
@@ -276,16 +314,16 @@ int RunPythiaAnalysis()
       }
       break;
 
-      case 1:  // Bins in impact parameter b
+      case 1: // ALICE V0 + 1 TPC Hit
       {
-      vector<double> limits = { 0.0, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0};
-      eventFiltersP2Ana = EventFilter::createEventFilterSet(EventFilter::ImpactParameter,limits);
+      eventFiltersP2Ana.push_back( aliceEventFilter);
       }
       break;
 
-      case 2:  // Min bias in V0M multiplicity
+      case 2:  // Bins in impact parameter b
       {
-      eventFiltersP2Ana.push_back( new EventFilter(EventFilter::ParticleFilter0,1.0,1000.0) );
+      vector<double> limits = { 0.0, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0};
+      eventFiltersP2Ana = EventFilter::createEventFilterSet(EventFilter::ImpactParameter,limits);
       }
       break;
 
@@ -295,6 +333,15 @@ int RunPythiaAnalysis()
       eventFiltersP2Ana = EventFilter::createEventFilterSet(EventFilter::ParticleFilter0,limits);
       }
       break;
+
+      case 4:
+      {
+      vector<double> limits = {  0.0, 4.0, 7.0, 12.0, 200.0 };
+      eventFiltersP2Ana = EventFilterAliceV0::createEventFilterAliceV0Set(limits);
+      }
+      break;
+
+
     }
 
 //  limits.push_back(0.0);
@@ -322,15 +369,15 @@ int RunPythiaAnalysis()
   vector<double> limits;
 
   ParticleFilter* openParticleFilter     = new ParticleFilter(0.001, 100.0, -6.0, 6.0, 10.0, -10.0,ParticleFilter::Hadron,ParticleFilter::Charged);
-  ParticleFilter* aliceV0ParticleFilter  = new ParticleFilterAliceV0(ParticleFilterAliceV0::V0M,ParticleFilter::Hadron,ParticleFilter::Charged);
+  ParticleFilter* aliceV0ParticleFilter  = new ParticleFilterAliceV0(ParticleFilterAliceV0::V0M,ParticleFilter::Hadron,ParticleFilter::Charged,ParticleFilter::Live,0.001,50.0);
   ParticleFilter* aliceTpcParticleFilter = new ParticleFilter(0.200, 100.0, -1.0, 1.0, 10.0, -10.0,ParticleFilter::Hadron,ParticleFilter::Charged);
 
   particleFiltersPythiaGen.push_back( openParticleFilter     );
   particleFiltersGlobalAna.push_back( aliceV0ParticleFilter  );
   particleFiltersGlobalAna.push_back( aliceTpcParticleFilter );
 
-  int analysisOptionP1 = 0;
-  int analysisOptionP2 = 0;
+  int analysisOptionP1 = 2;
+  int analysisOptionP2 = 2;
 
   switch (analysisOptionP1)
     {
@@ -355,24 +402,26 @@ int RunPythiaAnalysis()
     }
 
 
-  vector<unsigned int> comb;
-  comb.push_back(0);comb.push_back(3); p2ConfigND->combinations.push_back( comb ); comb.clear();
-  comb.push_back(0);comb.push_back(1); comb.push_back(3);comb.push_back(4); p2ConfigND->combinations.push_back( comb );comb.clear();
-  comb.push_back(0);comb.push_back(2); comb.push_back(3);comb.push_back(5); p2ConfigND->combinations.push_back( comb );comb.clear();
-  comb.push_back(1);comb.push_back(0); comb.push_back(4);comb.push_back(3); p2ConfigND->combinations.push_back( comb );comb.clear();
-  comb.push_back(1);comb.push_back(4); p2ConfigND->combinations.push_back( comb );  comb.clear();
-  comb.push_back(1);comb.push_back(2); comb.push_back(4);comb.push_back(5); p2ConfigND->combinations.push_back( comb );comb.clear();
-  comb.push_back(2);comb.push_back(0); comb.push_back(5);comb.push_back(3); p2ConfigND->combinations.push_back( comb );comb.clear();
-  comb.push_back(2);comb.push_back(1); comb.push_back(5);comb.push_back(4); p2ConfigND->combinations.push_back( comb );comb.clear();
-  comb.push_back(2);comb.push_back(5); p2ConfigND->combinations.push_back( comb );
+//  vector<unsigned int> comb;
+//  comb.push_back(0);comb.push_back(3); p2ConfigND->combinations.push_back( comb ); comb.clear();
+//  comb.push_back(0);comb.push_back(1); comb.push_back(3);comb.push_back(4); p2ConfigND->combinations.push_back( comb );comb.clear();
+//  comb.push_back(0);comb.push_back(2); comb.push_back(3);comb.push_back(5); p2ConfigND->combinations.push_back( comb );comb.clear();
+//  comb.push_back(1);comb.push_back(0); comb.push_back(4);comb.push_back(3); p2ConfigND->combinations.push_back( comb );comb.clear();
+//  comb.push_back(1);comb.push_back(4); p2ConfigND->combinations.push_back( comb );  comb.clear();
+//  comb.push_back(1);comb.push_back(2); comb.push_back(4);comb.push_back(5); p2ConfigND->combinations.push_back( comb );comb.clear();
+//  comb.push_back(2);comb.push_back(0); comb.push_back(5);comb.push_back(3); p2ConfigND->combinations.push_back( comb );comb.clear();
+//  comb.push_back(2);comb.push_back(1); comb.push_back(5);comb.push_back(4); p2ConfigND->combinations.push_back( comb );comb.clear();
+//  comb.push_back(2);comb.push_back(5); p2ConfigND->combinations.push_back( comb );
 
   // ND : no decay
   // WD : with decays
   // BS : with boost
 
   PythiaEventGenerator * pythiaGenerator         = new PythiaEventGenerator("PythiaEventGenerator",pythiaConfig,eventFiltersPythiaGen,particleFiltersPythiaGen, messageLevel);
-  GlobalAnalyzer   * globalAnalyzer              = new GlobalAnalyzer(  "Global",globalConfigND,eventFiltersGlobalAna,particleFiltersGlobalAna,messageLevel);
-  ParticleAnalyzer * particleAnalyzer            = new ParticleAnalyzer("P1", p1ConfigND, eventFiltersP1Ana, particleFiltersP1Ana, messageLevel);
+  GlobalAnalyzer   * globalAnalyzer1             = new GlobalAnalyzer(  "G1Pre",globalConfig1,eventFiltersGlobalAna1,particleFiltersGlobalAna,messageLevel);
+  GlobalAnalyzer   * globalAnalyzer2             = new GlobalAnalyzer(  "G1",   globalConfig2,eventFiltersGlobalAna2,particleFiltersGlobalAna,messageLevel);
+  ParticleAnalyzer * particleAnalyzer            = new ParticleAnalyzer("P1",   p1ConfigND, eventFiltersP1Ana, particleFiltersP1Ana, messageLevel);
+  ParticlePairAnalyzer * particlePairAnalyzer    = new ParticlePairAnalyzer("P2", p2ConfigND, eventFiltersP2Ana, particleFiltersP2Ana, messageLevel);
 
 //  vector<unsigned int> comb;
 //  comb.push_back(0);comb.push_back(3); p2ConfigND->combinations.push_back( comb ); comb.clear();
@@ -386,7 +435,6 @@ int RunPythiaAnalysis()
 //  comb.push_back(2);comb.push_back(5); p2ConfigND->combinations.push_back( comb );
 //  ParticlePairAnalyzer * particlePairAnalyzerND  = new ParticlePairAnalyzer("P2ND", p2ConfigND, eventFiltersP2Ana, particleFiltersP2Ana, messageLevel);
 //  ParticlePairAnalyzer * particlePairAnalyzerWD  = new ParticlePairAnalyzer("P2WD", p2ConfigWD, eventFiltersP2Ana, particleFiltersP2Ana, messageLevel);
-//  ParticlePairAnalyzer * particlePairAnalyzerBS  = new ParticlePairAnalyzer("P2BS", p2ConfigBS, eventFiltersP2Ana, particleFiltersP2Ana, messageLevel);
 
   TaskIterator * masterTask = new TaskIterator();
   masterTask->setName("IteratorTask");
@@ -397,9 +445,10 @@ int RunPythiaAnalysis()
   masterTask->setPartialSave(partialSave);
   masterTask->setSubsampleAnalysis(subsampleAnalysis);
   masterTask->addSubtask( pythiaGenerator        );
-  masterTask->addSubtask( globalAnalyzer         );
-  //masterTask->addSubtask( particleAnalyzer       );
-  //masterTask->addSubtask( particlePairAnalyzer );
+  masterTask->addSubtask( globalAnalyzer1        );
+  masterTask->addSubtask( globalAnalyzer2        );
+  masterTask->addSubtask( particleAnalyzer       );
+  masterTask->addSubtask( particlePairAnalyzer );
   masterTask->run();
 
   return 0;

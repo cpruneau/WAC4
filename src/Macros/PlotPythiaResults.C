@@ -252,7 +252,7 @@ int PlotPythiaResults()
 
     }
 
-  if (true) // this set was done with P1_PF0nGeq1Lt1000 based on the ALICE V0M acceptance PYTHIA events at 7 TeV
+  if (false) // this set was done with P1_PF0nGeq1Lt1000 based on the ALICE V0M acceptance PYTHIA events at 7 TeV
     {
     inputFiles[0]->cd();
     eventClassNames.clear();
@@ -324,7 +324,7 @@ int PlotPythiaResults()
 
     }
 
-  if (true) // PIONS
+  if (false) // PIONS
     {
     inputFiles[0]->cd();
     eventClassNames.clear();
@@ -396,7 +396,7 @@ int PlotPythiaResults()
 
     }
 
-  if (true) // KAONS
+  if (false) // KAONS
     {
     inputFiles[0]->cd();
     eventClassNames.clear();
@@ -468,7 +468,7 @@ int PlotPythiaResults()
 
     }
 
-  if (true) // PROTONS
+  if (false) // PROTONS
     {
     inputFiles[0]->cd();
     eventClassNames.clear();
@@ -683,8 +683,77 @@ int PlotPythiaResults()
 
     }
 
+  if (true)
+    {
+    TFile * wColor2 = new TFile("/Users/claudeapruneau/Documents/GitHub/WAC4/data//OutputFiles//PYTHIA/7TEV/V0AccTestHadronsOnlyWithColorReconn2/PYTHIA_pp_7TeV_inelastic_Global.root");
+    TFile * noColor1 = new TFile("/Users/claudeapruneau/Documents/GitHub/WAC4/data/OutputFiles/PYTHIA/7TEV/V0AccTestHadronsOnlyWithNoColorReconn2/PYTHIA_pp_7TeV_inelastic_Global-NoColorReconn.root");
+    TFile * noColor2 = new TFile("/Users/claudeapruneau/Documents/GitHub/WAC4/data/OutputFiles/PYTHIA/7TEV/V0AccTestHadronsOnlyWithNoColorReconn2/ReconnectionOff.root");
+    TFile * victor   = new TFile("/Users/claudeapruneau/Documents/GitHub/WAC4/data/OutputFiles/PYTHIA/7TEV/V0AccTestHadronsOnlyWithNoColorReconn2/PrimChMultiplicities.root");
 
-  plotters[0]->printAllCanvas(outputPathName);
+    // this next file is in the wrong location and was generated with color reco on.
+    TFile * wColor3  = new TFile("/Users/claudeapruneau/Documents/GitHub/WAC4/data//OutputFiles//PYTHIA/7TEV/V0AccTestHadronsOnlyWithColorReconn/PYTHIA_pp_7TeV_inelastic_G1.root");
+    TFile * wColor4  = new TFile("/Users/claudeapruneau/Documents/GitHub/WAC4/data//OutputFiles//PYTHIA/7TEV/V0AccTestHadronsOnlyWithColorReconnNoWeakDecay/PYTHIA_pp_7TeV_inelastic_G1.root");
+
+    TH1 * hWCol2 = (TH1*) wColor2->Get("Global_MB_V0M_n");
+    TH1 * hWCol3 = (TH1*) wColor3->Get("G1_PF0nGeq1Lt1000_V0M_n");
+    TH1 * hWCol4 = (TH1*) wColor4->Get("G1_PF0nGeq1Lt1000_V0M_n");
+
+    TH1 * hNoCol = (TH1*) noColor1->Get("Global_MB_V0M_n");
+    TH1 * hVic   = (TH1*) victor->Get("V0M");
+
+    TH2 * hWCol2D = (TH2*) wColor2->Get("Global_MB_V0M_n_HC_n");
+    TH2 * hNoCol2D = (TH2*) noColor1->Get("Global_MB_V0M_n_HC_n");
+
+   // hWCol2->Draw();
+
+    TCanvas * c1 = new TCanvas();
+    hWCol2D->Draw("ZCOL");
+    TH1 * hWColProX = hWCol2D->ProjectionX("WColX",2,-1);
+
+    TCanvas * c2 = new TCanvas();
+    hNoCol2D->Draw("ZCOL");
+    TH1 * hNoColProX = hNoCol2D->ProjectionX("NoColX",2,-1);
+
+    TCanvas * c3 = new TCanvas();
+
+//    hNoCol->SetLineColor(2);
+//    hNoCol->SetMarkerColor(2);
+//    hNoCol->SetMarkerStyle(22);
+//    hNoCol->Draw();
+
+    hVic->SetLineColor(6);
+    hVic->SetMarkerColor(6);
+    hVic->SetMarkerStyle(21);
+    hVic->Draw();
+
+
+    hNoColProX->SetLineColor(4);
+    hNoColProX->SetMarkerColor(4);
+    hNoColProX->SetMarkerStyle(20);
+    hNoColProX->Draw("SAME");
+
+//    hWColProX->SetLineColor(2);
+//    hWColProX->SetMarkerColor(2);
+//    hWColProX->SetMarkerStyle(23);
+//    hWColProX->Scale(0.041/0.034);
+//    hWColProX->Draw("SAME");
+
+    hWCol3->SetLineColor(2);
+    hWCol3->SetMarkerSize(1.65);
+    hWCol3->SetMarkerColor(2);
+    hWCol3->SetMarkerStyle(23);
+    hWCol3->Draw("SAME");
+
+    hWCol4->SetLineColor(5);
+    hWCol4->SetMarkerSize(1.65);
+    hWCol4->SetMarkerColor(5);
+    hWCol4->SetMarkerStyle(24);
+    hWCol4->Draw("SAME");
+
+
+    }
+
+  //plotters[0]->printAllCanvas(outputPathName);
 
   return 0;
   //  canvasConfiguration->setAxes(CanvasConfiguration::LogY);

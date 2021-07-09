@@ -54,6 +54,7 @@
 #pragma link C++ class EventProperties+;
 #pragma link C++ class EventCountHistos+;
 #pragma link C++ class EventFilter+;
+#pragma link C++ class EventFilterAliceV0+;
 #pragma link C++ class EventPlaneRandomizerTask+;
 #pragma link C++ class EventVertexRandomizerTask+;
 #pragma link C++ class EventVertexRandomizerConfiguration+;
@@ -121,6 +122,7 @@
 #pragma link C++ class  CollisionGeometryAnalyzer+;
 #pragma link C++ class  CollisionGeometryGenerator+;
 #pragma link C++ class  CollisionGeometryHistograms+;
+#pragma link C++ class  CollisionGeometryGradientHistograms+;
 #pragma link C++ class  CollisionGeometryMoments+;
 #pragma link C++ class  Nucleus+;
 #pragma link C++ class  NucleusGenerator+;

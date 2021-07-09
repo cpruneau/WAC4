@@ -305,6 +305,7 @@ int PlotGradients()
   gSystem->Load(includesPath+"GraphConfiguration.hpp");
   gSystem->Load(includesPath+"HistogramCollection.hpp");
   gSystem->Load(includesPath+"Histograms.hpp");
+  gSystem->Load(includesPath+"MessageLogger.hpp");
   gSystem->Load("libBase.dylib");
 
 

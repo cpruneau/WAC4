@@ -84,17 +84,27 @@ void ParticlePairAnalyzer::createHistograms()
   Histograms * histos;
   if (reportInfo("ParticlePairAnalyzer",getName(),"createHistograms()"))
     {
-    cout << "Creating Histograms for..."  << endl;
-    cout << "       nEventFilters: " << nEventFilters << endl;
-    cout << "    nParticleFilters: " << nParticleFilters << endl;
+    cout << endl;
+    cout << "       Creating Histograms: " << bn << endl;
+    cout << "             nEventFilters: " << nEventFilters << endl;
+    cout << "          nParticleFilters: " << nParticleFilters << endl;
+    cout << endl;
     }
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
-     TString efn = eventFilters[iEventFilter]->getName();
+    TString efn = eventFilters[iEventFilter]->getName();
+    if (reportInfo("ParticlePairAnalyzer",getName(),"createHistograms()"))
+      {
+      cout << "Creating histograms for event filter:" << efn << endl;
+      }
     // singles
     for (unsigned int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
       {
       TString pfn = particleFilters[iParticleFilter]->getName();
+      if (reportInfo("ParticlePairAnalyzer",getName(),"createHistograms()"))
+        {
+        cout << "Creating histograms for particle filter:" << pfn << endl;
+        }
       histos = new ParticleHistos(makeHistoName(bn,efn,pfn,""),ac,debugLevel);
       histos->createHistograms();
       histograms.push_back(histos);
@@ -108,6 +118,10 @@ void ParticlePairAnalyzer::createHistograms()
         for (unsigned int iParticleFilter2=0; iParticleFilter2<nParticleFilters; iParticleFilter2++ )
           {
           TString pfn2 = particleFilters[iParticleFilter2]->getName();
+          if (reportInfo("ParticlePairAnalyzer",getName(),"createHistograms()"))
+            {
+            cout << "Creating histograms for particle pairs with filter:" << pfn1 << " & " << pfn2 << endl;
+            }
           histos = new ParticlePairHistos(makePairHistoName(bn,efn,pfn1,pfn2,""),ac,debugLevel);
           histos->createHistograms();
           histograms.push_back(histos);
@@ -118,12 +132,20 @@ void ParticlePairAnalyzer::createHistograms()
     if (ac->fillPairs &&
         ac->calculateDerivedHistograms)
       {
+      if (reportInfo("ParticlePairAnalyzer",getName(),"createHistograms()"))
+        {
+        cout << "Creating derived histograms for particle pairs."  << endl;
+        }
       for (unsigned int iParticleFilter1=0; iParticleFilter1<nParticleFilters; iParticleFilter1++ )
         {
         TString pfn1 = particleFilters[iParticleFilter1]->getName();
         for (unsigned int iParticleFilter2=0; iParticleFilter2<nParticleFilters; iParticleFilter2++ )
           {
           TString pfn2 = particleFilters[iParticleFilter2]->getName();
+          if (reportInfo("ParticlePairAnalyzer",getName(),"createHistograms()"))
+            {
+            cout << "Creating derived histograms for particle pairs with filter:" << pfn1 << " & " << pfn2 << endl;
+            }
           histos = new ParticlePairDerivedHistos(makePairHistoName(bn,efn,pfn1,pfn2,""),ac,debugLevel);
           histos->createHistograms();
           derivedHistograms.push_back(histos);
@@ -135,12 +157,20 @@ void ParticlePairAnalyzer::createHistograms()
         ac->calculateDerivedHistograms &&
         ac->calculateCombinedHistograms)
       {
+      if (reportInfo("ParticlePairAnalyzer",getName(),"createHistograms()"))
+        {
+        cout << "Creating combined histograms for particle pairs."  << endl;
+        }
       unsigned int nCombinations = ac->combinations.size();
       for (unsigned int k=0;k<nCombinations;k++)
         {
         vector<unsigned int> combination = ac->combinations[k]; // f1, f2 or f1,f2, f3, f4
         unsigned int iParticleFilter1 = combination[0]; TString pfn1 = particleFilters[iParticleFilter1]->getName();
         unsigned int iParticleFilter2 = combination[1]; TString pfn2 = particleFilters[iParticleFilter2]->getName();
+        if (reportInfo("ParticlePairAnalyzer",getName(),"createHistograms()"))
+          {
+          cout << "Creating combined histograms for particle pairs with filter:" << pfn1 << " & " << pfn2 << endl;
+          }
         histos = new ParticlePairCombinedHistos(makePairHistoName(bn,efn,pfn1,pfn2,"_CI"),ac,debugLevel);
         histos->createHistograms();
         combinedHistograms.push_back(histos);
@@ -319,6 +349,10 @@ void ParticlePairAnalyzer::calculateDerivedHistograms()
       ParticleHistos * histos1 = (ParticleHistos *) histograms[baseSingle+iParticleFilter1];
       for (unsigned int iParticleFilter2=0; iParticleFilter2<nParticleFilters; iParticleFilter2++)
         {
+        if (reportInfo("ParticlePairAnalyzer",getName(),"calculateDerivedHistograms()"))
+          {
+          cout << "iParticleFilter1:" << iParticleFilter1 << "iParticleFilter2:" << iParticleFilter2  << endl;
+          }
         ParticleHistos * histos2 = (ParticleHistos *) histograms[baseSingle+iParticleFilter2];
         ParticlePairHistos * pairHistos = (ParticlePairHistos *) histograms[basePair+iParticleFilter1*nParticleFilters+iParticleFilter2];
         pairHistos->completeFill();
@@ -349,9 +383,10 @@ void ParticlePairAnalyzer::calculateDerivedHistograms()
     // to supply on input the relevant combinations of filters
     // ======================================================================
     unsigned int nCombinations = ac.combinations.size();
+
     if (reportInfo("ParticlePairAnalyzer",getName(),"calculateDerivedHistograms()"))
       {
-      cout << "Computing nCombinations:" << nCombinations << endl;
+      cout << ">>>>>>>>>>>       Computing nCombinations:" << nCombinations << endl;
       }
     for (unsigned int k=0; k<nCombinations; k++)
       {
@@ -426,33 +461,58 @@ void ParticlePairAnalyzer::calculateDerivedHistograms()
 
 void ParticlePairAnalyzer::scaleHistograms()
 {
+  double scalingFactor;
   unsigned int nEventFilters    = eventFilters.size();
   unsigned int nParticleFilters = particleFilters.size();
-  if (reportInfo("Task",getName(),"scaleHistograms()"))
-    ;
+  if (reportInfo("ParticlePairAnalyzer",getName(),"scaleHistograms()"))
+    {
+    cout << endl;
+    cout << "              Accepted number of events: " <<  nEventAccepted << endl;
+    cout << "                          nEventFilters: " <<  nEventFilters << endl;
+    cout << "                       nParticleFilters: " <<  nParticleFilters << endl;
+    cout << "                      histograms.size(): " <<  histograms.size() << endl;
+    cout << "               derivedHistograms.size(): " <<  derivedHistograms.size() << endl;
+    cout << "              combinedHistograms.size(): " <<  combinedHistograms.size() << endl;
+    cout << "--------------   Accumulated statistics: ----------------------------------" << endl;
+    }
+
   unsigned int index = 0;
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
-    // Scale the singles....
-    double factor = 1.0/double(nFilteredEventsAccepted[iEventFilter]);
-    for (unsigned int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
+    if (nFilteredEventsAccepted[iEventFilter]>1)
       {
-      index = iEventFilter*nHistos + iParticleFilter;
-      histograms[index]->scale(factor);
-      }
-    // Scale the pairs...
-    for (unsigned int iParticleFilter1=0; iParticleFilter1<nParticleFilters; iParticleFilter1++ )
-      {
-      for (unsigned int iParticleFilter2=0; iParticleFilter2<nParticleFilters; iParticleFilter2++ )
+      scalingFactor = 1.0/double(nFilteredEventsAccepted[iEventFilter]);
+      if (reportInfo("ParticlePairAnalyzer",getName(),"scaleHistograms()"))
         {
-        index = iEventFilter*nHistos + nParticleFilters + iParticleFilter1*nParticleFilters + iParticleFilter2;
-        histograms[index]->scale(factor);
+        cout << endl;
+        cout << "                                    iEventFilter: " <<  iEventFilter<< endl;
+        cout << "           nFilteredEventsAccepted[iEventFilter]: " <<  nFilteredEventsAccepted[iEventFilter]<< endl;
+        cout << "                                   scalingFactor: " <<  scalingFactor << endl;
+        }
+      for (unsigned int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
+        {
+        index = iEventFilter*nHistos + iParticleFilter;
+        histograms[index]->scale(scalingFactor);
+        }
+      for (unsigned int iParticleFilter1=0; iParticleFilter1<nParticleFilters; iParticleFilter1++ )
+        {
+        for (unsigned int iParticleFilter2=0; iParticleFilter2<nParticleFilters; iParticleFilter2++ )
+          {
+          index = iEventFilter*nHistos + nParticleFilters + iParticleFilter1*nParticleFilters + iParticleFilter2;
+          histograms[index]->scale(scalingFactor);
+          }
         }
       }
-    }
-  if (reportInfo("Task",getName(),"scaleHistograms()"))
-    {
-    cout << " Completed." << endl;
+    else
+      {
+      if (reportWarning("Task",getName(),"scaleHistograms()"))
+        {
+        cout << endl;
+        cout << "                                    iEventFilter: " <<  iEventFilter<< endl;
+        cout << "           nFilteredEventsAccepted[iEventFilter]: " <<  nFilteredEventsAccepted[iEventFilter]<< endl;
+        cout << "                            no scaling performed: " <<  endl;
+        }
+      }
     }
 }
 

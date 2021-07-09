@@ -22,12 +22,26 @@ public:
   RadialBoostConfiguration(const RadialBoostConfiguration & source);
   virtual ~RadialBoostConfiguration(){}
   RadialBoostConfiguration & operator=(const RadialBoostConfiguration & source);
+  TString getBaseName() { return baseName; }
   void printConfiguration(ostream & os);
 
-  // Boost parameters
+  //!
+  //!  Slope coefficient
+  //!
   double param_a;
+  //!
+  //!  Exponent of the ratio r/r_max
+  //!
   double param_b;
+  //!
+  //!  maximum value of beta allowed in the generation.
+  //!
   double betaMaximum;
+
+  //!
+  //!  Base name (beyond $WAC_REPOSITOTY) of the input file.
+  //!
+  TString baseName;
 
   // Histogram parameters
   int nBins_phi;  double min_phi;  double max_phi;
