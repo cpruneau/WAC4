@@ -250,16 +250,16 @@ void analyzeGradients(TH2 * work, TH2* edge, TH2* radius, TH2* hGx, TH2* hGy,
         hGy->SetBinContent(nHalf+iiX,     nHalf+iiY, gy);
         radius->SetBinContent(nHalf+iiX,  nHalf+iiY, radiusRatio);
 
-        hGx->SetBinContent(nHalf+1-iiX,   nHalf+iiY, gx);
+        hGx->SetBinContent(nHalf+1-iiX,   nHalf+iiY, -gx);
         hGy->SetBinContent(nHalf+1-iiX,   nHalf+iiY, gy);
         radius->SetBinContent(nHalf+1-iiX,nHalf+iiY, radiusRatio);
 
-        hGx->SetBinContent(nHalf+1-iiX,   nHalf+1-iiY, gx);
-        hGy->SetBinContent(nHalf+1-iiX,   nHalf+1-iiY, gy);
+        hGx->SetBinContent(nHalf+1-iiX,   nHalf+1-iiY, -gx);
+        hGy->SetBinContent(nHalf+1-iiX,   nHalf+1-iiY, -gy);
         radius->SetBinContent(nHalf+1-iiX,nHalf+1-iiY, radiusRatio);
 
         hGx->SetBinContent(nHalf+iiX,     nHalf+1-iiY, gx);
-        hGy->SetBinContent(nHalf+iiX,     nHalf+1-iiY, gy);
+        hGy->SetBinContent(nHalf+iiX,     nHalf+1-iiY, -gy);
         radius->SetBinContent(nHalf+iiX,  nHalf+1-iiY, radiusRatio);
 
         delete fxy;
@@ -358,8 +358,8 @@ int PlotGradients()
 
 
   //   /Users/claudeapruneau/Documents/GitHub/WAC/../WAC-DATA/OutputFiles//CollisionGeometryCGG.root
-  TString fileName = inputPathName + "PbPbGeometry/Geom_PbPb_CGGA.root";
-  TFile *   inputFile = new TFile(fileName,"OLD");
+  TString fileName = inputPathName + "CG/PbPb/Geom_CGGA.root";
+  TFile *   inputFile = new TFile(fileName,"READ");
   if (inputFile)
     {
     cout << "<I> --------------------------------------------------------------------------------------------------------------" << endl;
@@ -374,7 +374,7 @@ int PlotGradients()
     return 1;
     }
 
-  fileName = outputPathName + "CG/Geom_CGGA_Gradients.root";
+  fileName = outputPathName + "CG/PbPb/Geom_CGGA_Gradients.root";
   TFile *   outputFile = new TFile(fileName,"RECREATE");
   if (outputFile)
     {

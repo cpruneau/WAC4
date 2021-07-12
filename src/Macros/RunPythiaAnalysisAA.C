@@ -7,7 +7,7 @@
 #include <TStyle.h>
 #include <TROOT.h>
 
-int RunPythiaAnalysis()
+int RunPythiaAnalysisAA()
 {
   TString includesPath = getenv("WAC_SRC");
   includesPath += "/Base/";
@@ -39,29 +39,32 @@ int RunPythiaAnalysis()
   gSystem->Load("libWacPythia.dylib");
   // ==================================================================================
 
-  MessageLogger::LogLevel messageLevel = MessageLogger::Info; // MessageLogger::Debug; //
+  MessageLogger::LogLevel messageLevel =  MessageLogger::Info; // MessageLogger::Debug; //
   unsigned long nEventRequested   = 10000;
-  unsigned long nEventReported    = 100;
+  unsigned long nEventReported    = 10;
   unsigned long nEventPartialSave = 500;
   bool    partialSave             = false;
   bool    subsampleAnalysis       = false;
+  int     beamType                = 2212;
   double  beamEnergy              = 7000.0; // GeV
   double  minBias                 = true; // alternative is AliceV0
   TString outputFileNameBase      = "PYTHIA_pp_7TeV_inelastic_";
   TString inputPathName           = getenv("WAC_INPUT_PATH");
   TString outputPathName          = getenv("WAC_OUTPUT_PATH");
   inputPathName  += "/PYTHIA/7TEV/";
-  outputPathName += "/PYTHIA/7TEV/RidiculeTest/";
+  //outputPathName += "/PYTHIA/7TEV/BetterTest/";  // radialBoostConfig->param_a      = 0.08;
+  //outputPathName += "/PYTHIA/7TEV/BetterTest2/";  // radialBoostConfig->param_a     = 0.4;
+  outputPathName += "/PYTHIA/7TEV/BetterTest3/";  // radialBoostConfig->param_a     = 0.9;
   gSystem->mkdir(outputPathName,1);
 
   std::cout << "==================================================================================" << std::endl;
-  std::cout << "PYTHIA Model Analysis - Single Particle Histograms" << endl;
+  std::cout << "PYTHIA Model Analysis" << endl;
   std::cout << "==================================================================================" << std::endl;
   TString pdgDataTable = getenv("WAC_SRC");
   pdgDataTable += "/EOS/pdg.dat";
   ParticleTypeCollection * particles = ParticleTypeCollection::getMasterParticleCollection(); //ParticleTypeCollection::getMasterParticleCollection();
   particles->readFromFile(pdgDataTable);
-  particles->printProperties(std::cout);
+  //particles->printProperties(std::cout);
 
   CollisionGeometryConfiguration * cggConfig = new CollisionGeometryConfiguration();
   cggConfig->forceHistogramsRewrite = true;
@@ -80,9 +83,21 @@ int RunPythiaAnalysis()
   pythiaOptions.push_back( new TString("SoftQCD:inelastic = on") );             // All inelastic processes
   //pythiaOptions.push_back( new TString("SoftQCD:all = on") );                   // Allow total sigma = elastic/SD/DD/ND
                                                                                 // pythiaOptions.push_back(  new TString("HardQCD:all = on");
+  pythiaOptions.push_back( new TString("130:mayDecay = no") ); //K0s decay off
+  pythiaOptions.push_back( new TString("310:mayDecay = no") ); //K0s decay off
+  pythiaOptions.push_back( new TString("311:mayDecay = no") ); //K0  decay off
+  pythiaOptions.push_back( new TString("3112:mayDecay = no") );
+  pythiaOptions.push_back( new TString("3122:mayDecay = no") );
+  pythiaOptions.push_back( new TString("3222:mayDecay = no") );
+  pythiaOptions.push_back( new TString("3212:mayDecay = no") );
+
+  pythiaOptions.push_back( new TString("3322:mayDecay = no") );
+  pythiaOptions.push_back( new TString("3312:mayDecay = no") );
+  pythiaOptions.push_back( new TString("3334:mayDecay = no") );
+
   PythiaConfiguration * pythiaConfig = new PythiaConfiguration();
-  pythiaConfig->beam                = 2212;  // PDG Code   proton is 2212
-  pythiaConfig->target              = 2212;
+  pythiaConfig->beam                = beamType;  // PDG Code   proton is 2212
+  pythiaConfig->target              = beamType;
   pythiaConfig->energy              = beamEnergy;
   pythiaConfig->options             = pythiaOptions;
   pythiaConfig->useEventStream0     = true;
@@ -117,10 +132,10 @@ int RunPythiaAnalysis()
   globalConfigND->nBins_n2 = 40;
   globalConfigND->min_n    = 0.0;
   globalConfigND->max_n    = 20000;
-  globalConfigND->nBins_e  = 200;
+  globalConfigND->nBins_e  = 400;
   globalConfigND->nBins_e2 = 20;
   globalConfigND->min_e    = 0.0;
-  globalConfigND->max_e    = 10000.0;
+  globalConfigND->max_e    = 40000.0;
   globalConfigND->nBins_q  = 200;
   globalConfigND->nBins_q2 = 20;
   globalConfigND->min_q    = -100.0;
@@ -157,7 +172,7 @@ int RunPythiaAnalysis()
 
   p1ConfigND->nBins_pt    = 200;
   p1ConfigND->min_pt      = 0.00;
-  p1ConfigND->max_pt      = 100.0;
+  p1ConfigND->max_pt      = 20.0;
   p1ConfigND->nBins_eta   = 80;
   p1ConfigND->min_eta     = -4;
   p1ConfigND->max_eta     =  4;
@@ -199,10 +214,21 @@ int RunPythiaAnalysis()
   p2ConfigND->max_phi     = 2.0*3.1415927;
 
   RadialBoostConfiguration * radialBoostConfig = new RadialBoostConfiguration();
+  radialBoostConfig->useEventStream0   = true;
+  radialBoostConfig->loadHistograms    = true;
+  radialBoostConfig->createHistograms  = true;
+  radialBoostConfig->scaleHistograms   = true;
+  radialBoostConfig->saveHistograms         = true;
+  radialBoostConfig->forceHistogramsRewrite = true;
   radialBoostConfig->max_r       = 16.0;
-  radialBoostConfig->param_a     = 0.08;
+  radialBoostConfig->param_a     = 0.4;
   radialBoostConfig->param_b     = 1.0;
   radialBoostConfig->betaMaximum = 0.999;
+  radialBoostConfig->baseName    = "CGGA";// CG/PbPb/PbPb_Geom_Gradients.root";
+  radialBoostConfig->inputPath   = "/Users/claudeapruneau/Documents/GitHub/WAC4Dev/data//OutputFiles/CG/PbPb/"; //  PbPb_Geom_Gradients.root;
+  radialBoostConfig->rootInputFileName = "Geom_CGGA_Gradients.root";
+  radialBoostConfig->outputPath        = outputPathName;
+  radialBoostConfig->rootOuputFileName = outputFileNameBase;
 
   // =========================================
   // Setup all event filters
@@ -215,12 +241,14 @@ int RunPythiaAnalysis()
   vector<EventFilter*> eventFiltersGlobalAna;
   vector<EventFilter*> eventFiltersP1Ana;
   vector<EventFilter*> eventFiltersP2Ana;
+  vector<EventFilter*> eventFiltersRadialBoost;
 
   int centralityOptionGeom    = 0;
   int centralityOptionPythia  = 0;
   int centralityOptionGlobal  = 0;
   int centralityOptionP1      = 0;
   int centralityOptionP2      = 0;
+  int centralityOptionRadial  = 0;
 
   EventFilter * openEventFilter = new EventFilter(EventFilter::MinBias,0.0,0.0);
 
@@ -329,6 +357,19 @@ int RunPythiaAnalysis()
       break;
     }
 
+  switch (centralityOptionRadial)
+    {
+      default:
+      case 0:
+      {
+      vector<double> limits = { 0.0, 0.5, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0};
+      eventFiltersRadialBoost = EventFilter::createEventFilterSet(EventFilter::ImpactParameter,limits);
+      }
+      break;
+    }
+
+
+
 //  limits.push_back(0.0);
 //  //limits.push_back(2.0);   // 90-100%
 //  limits.push_back(7.0);   // 80-90%
@@ -351,7 +392,6 @@ int RunPythiaAnalysis()
   vector<ParticleFilter*>  particleFiltersGlobalAna ;
   vector<ParticleFilter*>  particleFiltersP1Ana;
   vector<ParticleFilter*>  particleFiltersP2Ana;
-  vector<double> limits;
 
   ParticleFilter* openParticleFilter     = new ParticleFilter(0.001, 100.0, -6.0, 6.0, 10.0, -10.0,ParticleFilter::Hadron,ParticleFilter::Charged);
   ParticleFilter* aliceV0ParticleFilter  = new ParticleFilterAliceV0();
@@ -406,7 +446,7 @@ int RunPythiaAnalysis()
   CollisionGeometryAnalyzer  * collisionGeomAnalyzer  = new CollisionGeometryAnalyzer ("CGGA",cggConfig,eventFiltersGeomAna,messageLevel);
   PythiaEventGenerator * pythiaGenerator         = new PythiaEventGenerator("PythiaEventGenerator",pythiaConfig,eventFiltersPythiaGen,particleFiltersPythiaGen, messageLevel);
   ParticleDecayerTask  * decayerTask             = new ParticleDecayerTask();
-  RadialBoostTask      * radialBoostTask         = new RadialBoostTask (radialBoostConfig, messageLevel);
+  RadialBoostTask      * radialBoostTask         = new RadialBoostTask ("Boost",radialBoostConfig, eventFiltersRadialBoost, messageLevel);
 
   GlobalAnalyzer   * globalAnalyzerND            = new GlobalAnalyzer(  "GlobalND",globalConfigND,eventFiltersGlobalAna,particleFiltersGlobalAna,messageLevel);
   GlobalAnalyzer   * globalAnalyzerWD            = new GlobalAnalyzer(  "GlobalWD",globalConfigWD,eventFiltersGlobalAna,particleFiltersGlobalAna,messageLevel);
@@ -444,7 +484,7 @@ int RunPythiaAnalysis()
   masterTask->addSubtask( particleAnalyzerND     );
   //masterTask->addSubtask( particlePairAnalyzerND );
   masterTask->addSubtask( radialBoostTask );
-  masterTask->addSubtask( decayerTask );
+  //masterTask->addSubtask( decayerTask );
   //masterTask->addSubtask( globalAnalyzerWD );
   //masterTask->addSubtask( particleAnalyzerWD );
   //masterTask->addSubtask( particlePairAnalyzerWD );

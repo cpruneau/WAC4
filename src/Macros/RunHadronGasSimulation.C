@@ -47,8 +47,8 @@ int RunHadronGasSimulation()
   gSystem->Load(includesPath+"HadronGasVsTempHistograms.hpp");
   gSystem->Load("libHadronGas.dylib");
 
-  MessageLogger::LogLevel messageLevel = MessageLogger::Info; //MessageLogger::Debug; //
-  unsigned long nEventRequested   = 10000;
+  MessageLogger::LogLevel messageLevel = MessageLogger::Debug; // MessageLogger::Info; //
+  unsigned long nEventRequested   = 10;
   unsigned long nEventReported    = 10000;
   unsigned long nEventPartialSave = 500;
   bool    partialSave             = false;
@@ -169,9 +169,8 @@ int RunHadronGasSimulation()
   ac->max_phi     = 2.0*3.1415927;
 
   RadialBoostConfiguration * rbc = new RadialBoostConfiguration();
-  rbc->max_r = 20.0;
-  rbc->param_a = 0.2;
-  rbc->param_b = 1.0;
+  rbc->param_a     = 0.75;
+  rbc->param_b     = 1.0;
   rbc->betaMaximum = 0.999;
 
   ////  ParticlePairAnalyzerConfiguration * ac2 = new ParticlePairAnalyzerConfiguration();
@@ -216,10 +215,10 @@ int RunHadronGasSimulation()
   vector<int> allPdgCodes;     allPdgCodes = particles->getListOfPdgCodes();
   vector<int> stablePdgCodes;  stablePdgCodes = stableParticles->getListOfPdgCodes();
 
-  vector<EventFilter*>    eventFiltersGlob;
+  vector<EventFilter*>    eventFiltersG1;
   vector<EventFilter*>    eventFiltersP1;
   vector<EventFilter*>    eventFiltersP2;
-  vector<ParticleFilter*> particleFiltersGlob;
+  vector<ParticleFilter*> particleFiltersG1;
   vector<ParticleFilter*> particleFiltersP1;
   vector<ParticleFilter*> particleFiltersP2;
 
@@ -227,7 +226,7 @@ int RunHadronGasSimulation()
 
   cout << "Now, let's setup the event filters" << endl;
 
-  eventFiltersGlob.push_back   ( openEventFilter);
+  eventFiltersG1.push_back   ( openEventFilter);
   int eventFilterOption = 0;
   switch (eventFilterOption)
     {
@@ -261,7 +260,7 @@ int RunHadronGasSimulation()
 
   cout << "Now, let's assign the filters" << endl;
 
-  particleFiltersGlob.push_back( openPartFilter );
+  particleFiltersG1.push_back( openPartFilter );
   int particleFilterOptionP1 = 1;
   switch (particleFilterOptionP1)
     {
@@ -276,13 +275,14 @@ int RunHadronGasSimulation()
 
   HadronGasGeneratorTask * hadronGasGeneratorTask = new HadronGasGeneratorTask("HadronGasGenerator",hggc,messageLevel);
   ParticleDecayerTask    * decayer = new ParticleDecayerTask();
-  RadialBoostTask  * radialBoostTask     = new RadialBoostTask (rbc, messageLevel);
-  GlobalAnalyzer   * globalAnalyzerND    = new GlobalAnalyzer  ("GlobalND",gaND,eventFiltersGlob, particleFiltersGlob, messageLevel);  // generated
-  GlobalAnalyzer   * globalAnalyzerBs    = new GlobalAnalyzer  ("GlobalBs",ga,  eventFiltersGlob, particleFiltersGlob, messageLevel);  // boosted
-  GlobalAnalyzer   * globalAnalyzer      = new GlobalAnalyzer  ("Global",  ga,  eventFiltersGlob, particleFiltersGlob, messageLevel);  // with decays
-  ParticleAnalyzer * particleAnalyzerND  = new ParticleAnalyzer("P1ND",    ac,  eventFiltersP1,   particleFiltersP1,   messageLevel);  // analysis w/o decays
-  ParticleAnalyzer * particleAnalyzerBs  = new ParticleAnalyzer("P1BS",    ac,  eventFiltersP1,   particleFiltersP1,   messageLevel);
-  ParticleAnalyzer * particleAnalyzer    = new ParticleAnalyzer("P1",      ac,  eventFiltersP1,   particleFiltersP1,   messageLevel);
+
+  RadialBoostTask  * radialBoostTask     = new RadialBoostTask ("R1",  rbc, eventFiltersG1, messageLevel);
+  GlobalAnalyzer   * globalAnalyzerND    = new GlobalAnalyzer  ("G1ND",gaND,eventFiltersG1, particleFiltersG1, messageLevel);  // generated
+  GlobalAnalyzer   * globalAnalyzerBs    = new GlobalAnalyzer  ("G1Bs",ga,  eventFiltersG1, particleFiltersG1, messageLevel);  // boosted
+  GlobalAnalyzer   * globalAnalyzer      = new GlobalAnalyzer  ("G1",  ga,  eventFiltersG1, particleFiltersG1, messageLevel);  // with decays
+  ParticleAnalyzer * particleAnalyzerND  = new ParticleAnalyzer("P1ND",ac,  eventFiltersP1, particleFiltersP1,   messageLevel);  // analysis w/o decays
+  ParticleAnalyzer * particleAnalyzerBs  = new ParticleAnalyzer("P1BS",ac,  eventFiltersP1, particleFiltersP1,   messageLevel);
+  ParticleAnalyzer * particleAnalyzer    = new ParticleAnalyzer("P1",  ac,  eventFiltersP1, particleFiltersP1,   messageLevel);
   //  ParticlePairAnalyzer * particlePairAnalyzerND  = new ParticlePairAnalyzer("P2", ac2, eventFiltersP2, particleFiltersP2, messageLevel);
   //  ParticlePairAnalyzer * particlePairAnalyzer    = new ParticlePairAnalyzer("P2", ac2, eventFiltersP2, particleFiltersP2, messageLevel);
 
@@ -304,32 +304,6 @@ int RunHadronGasSimulation()
   masterTask->addSubtask( particleAnalyzer       );
   // masterTask->addSubtask( particlePairAnalyzer );
   masterTask->run();
-
-  ////
-  ////  SubSampleStatCalculator * subSampleStatCalculator;
-  ////  if (subsampleAnalysis && ga->subsampleAnalysis)
-  ////    {
-  ////    TString inputFileName   = outputFileNameBase+"Global";
-  ////    TString outputFileName  = outputFileNameBase+"Global_Sum";
-  ////    subSampleStatCalculator = new SubSampleStatCalculator(outputPathName,inputFileName,globalAnalyzer->getSubSampleIndex(),outputPathName,outputFileName,MessageLogger::Info);
-  ////    subSampleStatCalculator->execute();
-  ////    }
-  ////
-  ////  if (subsampleAnalysis && ac->subsampleAnalysis)
-  ////    {
-  ////    TString inputFileName   = outputFileNameBase+"P1";
-  ////    TString outputFileName  = outputFileNameBase+"P1_Sum";
-  ////    subSampleStatCalculator = new SubSampleStatCalculator(outputPathName,inputFileName,particleAnalyzer->getSubSampleIndex(),outputPathName,outputFileName,MessageLogger::Info);
-  ////    subSampleStatCalculator->execute();
-  ////    }
-  ////
-  ////  if (subsampleAnalysis && ac2->subsampleAnalysis)
-  ////    {
-  ////    TString inputFileName   = outputFileNameBase+"P2";
-  ////    TString outputFileName  = outputFileNameBase+"P2_Sum";
-  ////    subSampleStatCalculator = new SubSampleStatCalculator(outputPathName,inputFileName,particlePairAnalyzer->getSubSampleIndex(),outputPathName,outputFileName,MessageLogger::Info);
-  ////    subSampleStatCalculator->execute();
-  ////    }
 
   return 0;
 }
