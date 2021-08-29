@@ -15,6 +15,16 @@ public:
   HadronGasGeneratorConfiguration & operator=(const HadronGasGeneratorConfiguration & config);
   void printConfiguration(ostream & os);
 
+  //!
+  //! Toggle switch indicating the instance of HG is running on its own (true) or to be called after
+  //! a collision geometry generator or some kind. Default values is "true"
+  //!
+  bool standaloneMode;
+
+  //! kinetic temperature
+  int nTkin; double minTkin, maxTkin;
+
+  //! chemical temperature
   int nT;    double minT,    maxT;
   int nMass; double minMass, maxMass;
   int nMu;   double minMu,   maxMu;

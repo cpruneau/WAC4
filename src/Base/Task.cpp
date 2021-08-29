@@ -42,11 +42,14 @@ subSampleIndex          ( 0 ),
 subtasks                (),
 masterCollection        ( nullptr)
 {
-  // no ops
+  setClassName("Task");
+  setInstanceName(taskName);
 }
 
 void Task::initialize()
 {
+  if (reportStart("Task",getName(),"initialize()"))
+    ;
   if (isTaskOk() && taskConfiguration->useParticles)
     {
     particleFactory  = Particle::getFactory();
@@ -77,20 +80,20 @@ void Task::initialize()
   if (isTaskOk() && taskConfiguration->loadHistograms)   loadHistograms();
   if (isTaskOk() && taskConfiguration->createHistograms)
     {
+    if (reportDebug("Task",getName(),"initialize()"))
+      cout << "Create EventCountHistograms" << endl;
     unsigned int nEventFilters = eventFilters.size();
     if (nEventFilters>0)  nFilteredEventsAccepted.assign(nEventFilters,0.0);
-    if (reportInfo("Task",getName(),"initialize()")) cout << "eventCountHistos" << endl;
     eventCountHistos = new EventCountHistos(getName(),getReportLevel());
-    if (reportInfo("Task",getName(),"initialize()")) cout << "eventCountHistos" << endl;
     eventCountHistos->createHistograms();
-    if (reportInfo("Task",getName(),"initialize()")) cout << "eventCountHistos" << endl;
+    if (reportDebug("Task",getName(),"initialize()"))
+      cout << "Done with EventCountHistograms" << endl;
     createHistograms();
-    if (reportInfo("Task",getName(),"initialize()")) cout << "eventCountHistos" << endl;
     }
-
-
   nEventProcessed = 0;
   nEventAccepted  = 0;
+  if (reportEnd("Task",getName(),"initialize()"))
+    ;
 }
 
 
@@ -298,6 +301,7 @@ void Task::scaleHistograms()
   double scalingFactor;
   unsigned int nEventFilters    = eventFilters.size();
   unsigned int nParticleFilters = particleFilters.size();
+  int index;
   if (reportInfo("Task",getName(),"scaleHistograms()"))
     {
     cout << endl;
@@ -324,6 +328,8 @@ void Task::scaleHistograms()
         }
       for (unsigned int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
         {
+          index = iParticleFilter+iEventFilter*nParticleFilters;
+        if (reportInfo("Task",getName(),"scaleHistograms()"))cout <<  "Scaling group index:" << index << endl;
         histograms[iParticleFilter+iEventFilter*nParticleFilters]->scale(scalingFactor);
         }
       }
@@ -351,7 +357,7 @@ void Task::saveHistograms()
 {
   if (reportInfo("Task",getName(),"saveHistograms()"))
     cout << "Saving histograms" << endl;
-  TFile * outputFile;
+  TFile * outputFile = nullptr;
   TString outputFileName = taskConfiguration->outputPath;
   outputFileName += taskConfiguration->rootOuputFileName;
   outputFileName += getName();
@@ -393,38 +399,41 @@ void Task::saveHistograms()
     }
   if (reportInfo("Task",getName(),"saveHistograms()"))
     {
+    cout << endl;
     cout << "      basic histograms:"  << histograms.size() << endl;
     cout << "    derived histograms:"  << derivedHistograms.size() << endl;
     cout << "   combined histograms:"  << combinedHistograms.size() << endl;
     }
   for (unsigned int iHisto=0; iHisto<histograms.size(); iHisto++)
     {
+    if (reportDebug("Task",getName(),"saveHistograms()")) cout << "iHisto:" << iHisto << endl;
     histograms[iHisto]->saveHistograms(outputFile);
     }
+  if (reportDebug("Task",getName(),"saveHistograms()")) cout << "Done with BASIC histograms" << endl;
   if (taskConfiguration->calculateDerivedHistograms)
     {
     for (unsigned int iHisto=0; iHisto<derivedHistograms.size(); iHisto++)
       {
       derivedHistograms[iHisto]->saveHistograms(outputFile);
-      if (reportInfo("Task",getName(),"saveHistograms()"))
+      if (reportDebug("Task",getName(),"saveHistograms()"))
         {
         cout << " done w/ iHisto=" <<  iHisto << endl;
         }
       }
     if (taskConfiguration->calculateCombinedHistograms)
       {
-      if (reportInfo("Task",getName(),"saveHistograms()"))
+      if (reportDebug("Task",getName(),"saveHistograms()"))
         {
         cout << "Saving combined histograms. n=combinedHistograms.size()" << endl;
         }
       for (unsigned int iHisto=0; iHisto<combinedHistograms.size(); iHisto++)
         {
-        if (reportInfo("Task",getName(),"saveHistograms()"))
+        if (reportDebug("Task",getName(),"saveHistograms()"))
           {
           cout << " iHisto=" <<  iHisto << endl;
           }
         combinedHistograms[iHisto]->saveHistograms(outputFile);
-        if (reportInfo("Task",getName(),"saveHistograms()"))
+        if (reportDebug("Task",getName(),"saveHistograms()"))
           {
           cout << " done w/ iHisto=" <<  iHisto << endl;
           }
@@ -432,8 +441,8 @@ void Task::saveHistograms()
       }
     }
   outputFile->Close();
-  if (reportInfo("Task",getName(),"saveHistograms()"))
-    cout << "Completed." << endl;
+  if (reportEnd("Task",getName(),"saveHistograms()"))
+    ;
 }
 
 void Task::saveNEventProcessed(TFile * outputFile)
@@ -487,47 +496,33 @@ void Task::loadNFilteredEventsAccepted(TFile * inputFile, vector<unsigned int> &
 
 void Task::calculateDerivedHistograms()
 {
-  if (reportStart("Task",getName(),"calculateDerivedHistograms()"))
+  setHoldLogLevel(MessageLogger::Debug);
+  setFunctionName("calculateDerivedHistograms()");
+  if (reportDebug())
     ;
   if (derivedHistograms.size()==0)
     {
+    if (reportDebug()) cout << endl << "DerivedHistograms.size()==0 derived histograms are part of the basic class" << endl;
     // Derived histograms are in the same class as the basic histograms
     for (unsigned int iHisto=0; iHisto<histograms.size(); iHisto++)
       {
-      histograms[iHisto]->calculateDerivedHistograms();
+      if (reportDebug()) cout << "iHisto" << iHisto << endl;
+        histograms[iHisto]->calculateDerivedHistograms();
       }
     }
   else
     {
+    if (reportDebug()) cout << "This should never be called..." << endl;
     // Derived histograms are in a distinct class
     //    for (unsigned int iHisto=0; iHisto<histograms.size(); iHisto++)
     //      {
     //      derivedHistograms[iHisto]->calculateDerivedHistograms(histograms[iHisto]);
     //      }
     }
-  if (reportEnd("Task",getName(),"calculateDerivedHistograms()"))
+  if (reportDebug())
     ;
+  restoreLogLevel();
 }
-
-
-Task::TaskStatus Task::taskStatus = Task::TaskOk;
-
-TString Task::getTaskStatusName()
-{
-  TString statusName;
-  switch (taskStatus)
-    {
-      case Unknown:     statusName = "Unknown"; break;
-      case TaskOk:      statusName = "TaskOk";  break;
-      case TaskEof:     statusName = "TaskEof"; break;
-      case TaskEod:     statusName = "TaskEod"; break;
-      case TaskWarning: statusName = "TaskWarning"; break;
-      case TaskError:   statusName = "TaskError";   break;
-      case TaskFatal:   statusName = "TaskFatal";   break;
-    }
-  return statusName;
-}
-
 
 double Task::readParameter(TFile * inputFile, const TString & parameterName)
 {

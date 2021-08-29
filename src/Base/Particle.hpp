@@ -120,6 +120,14 @@ public:
   return parents.size()>0;
   }
 
+  TString getName()
+  {
+  if (type)
+    return type->getName();
+  else
+    return "UnknownType";
+  }
+
   unsigned int getNParents() const
   {
   return parents.size();

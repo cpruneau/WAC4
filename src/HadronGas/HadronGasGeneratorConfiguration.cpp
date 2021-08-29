@@ -14,16 +14,18 @@ using namespace std;
 HadronGasGeneratorConfiguration::HadronGasGeneratorConfiguration()
 :
 NucleonNucleonCollisionGeneratorConfiguration(),
-nT(50),     minT(100.0),  maxT(200.0),
-nMass(50),  minMass(0.0), maxMass(3.0),
-nMu(20),    minMu(0.0),   maxMu(40),
-nMuB(20),   minMuB(0.0),  maxMuB(20),
-nMuS(20),   minMuS(0.0),  maxMuS(20),
-nMuQ(20),   minMuQ(0.0),  maxMuQ(20),
-nP(200),    minP(0.0),    maxP(5.0),
+standaloneMode(true),
+nTkin(1),   minTkin(170.0), maxTkin(170.0),
+nT(50),     minT(100.0),    maxT(200.0),
+nMass(50),  minMass(0.0),   maxMass(3.0),
+nMu(20),    minMu(0.0),     maxMu(40),
+nMuB(20),   minMuB(0.0),    maxMuB(20),
+nMuS(20),   minMuS(0.0),    maxMuS(20),
+nMuQ(20),   minMuQ(0.0),    maxMuQ(20),
+nP(200),    minP(0.0),      maxP(5.0),
 generatorType(MomentumGenerator::CylindricalGaussPtUniformY),
 volume(1.0),
-totalMult(1000),
+totalMult(100),
 momentumGeneratorParameters()
 {
   // no ops

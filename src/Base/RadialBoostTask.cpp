@@ -37,6 +37,8 @@ betaMaximum(0)
   setConfiguration(_configuration);
   setReportLevel(_selectedLevel);
   eventFilters  = _eventFilters;
+  appendClassName("RadialBoostTask");
+  setInstanceName(_name);
  }
 
 void RadialBoostTask::createHistograms()
@@ -88,23 +90,47 @@ void RadialBoostTask::execute()
  // unsigned int nParticleFilters = particleFilters.size();
   Event & event = * eventStreams[0];
 
+  if (reportDebug("RadialBoostTask",getName(),"execute()"))
+    cout << "       nEventFilters: " << nEventFilters << endl;
+
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
+    if (reportDebug("RadialBoostTask",getName(),"execute()"))
+      cout << "       iEventFilter: " << iEventFilter << endl;
+
     if (!eventFilters[iEventFilter]->accept(event)) continue;
+    if (reportDebug("RadialBoostTask",getName(),"execute()"))
+      cout << "       iEventFilter: " << iEventFilter << " accepted event" << endl;
+
     incrementEventAccepted(iEventFilter);
     CollisionGeometryGradientHistograms * cggh = (CollisionGeometryGradientHistograms *) inputHistograms[iEventFilter];
+
+    if (reportDebug("RadialBoostTask",getName(),"execute()"))
+      cout << "       cggh: " << cggh <<  endl;
+
 
     unsigned int nParticles = event.getNParticles();
     for (unsigned int iParticle=0; iParticle<nParticles; iParticle++)
       {
+      if (reportDebug("RadialBoostTask",getName(),"execute()"))
+        cout << "       iParticle: " << iParticle <<  endl;
 
       Particle & particle = * event.getParticleAt(iParticle);
       if (particle.isLive() || particle.isInteraction() )
         {
+        if (reportDebug("RadialBoostTask",getName(),"execute()"))
+          cout << "       iParticle: " << iParticle <<  "  loop" << endl;
+
         TLorentzVector & position = particle.getPosition();
         rx  = position.X(); // units are fm
         ry  = position.Y();
+        if (reportDebug("RadialBoostTask",getName(),"execute()"))
+          cout << "       iParticle: " << iParticle <<  "  loop2" << endl
+          << "              rx: " << rx << endl
+          << "              ry: " << ry << endl;
         cggh->getRadiusAndGradient(rx,ry, r,gx,gy);
+        if (reportDebug("RadialBoostTask",getName(),"execute()"))
+          cout << "       iParticle: " << iParticle <<  "  loop3" << endl;
 //        phi = 0.0;
         phi = TMath::ATan2(gy,gx);
         if (phi<0) phi += TMath::TwoPi();
@@ -114,9 +140,15 @@ void RadialBoostTask::execute()
         double g = sqrt(gx*gx+gy*gy);
         betax = beta * gx/g;
         betay = beta * gy/g;
+        if (reportDebug("RadialBoostTask",getName(),"execute()"))
+          cout << "       iParticle: " << iParticle <<  "  loop4" << endl;
         RadialBoostHistos * histos = (RadialBoostHistos *) histograms[0];
+        if (reportDebug("RadialBoostTask",getName(),"execute()"))
+          cout << "       iParticle: " << iParticle <<  "  loop5" << endl;
         histos->fill(rx,ry,r,phi,beta,1.0);
         particle.boost(betax,betay,0.0);
+        if (reportDebug("RadialBoostTask",getName(),"execute()"))
+          cout << "       iParticle: " << iParticle <<  "  loop" << endl;
         }
       }
     }

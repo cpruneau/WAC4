@@ -106,7 +106,7 @@ void CollisionGeometryGenerator::execute()
     ;
   incrementEventProcessed();
   Event & event = *eventStreams[0];
-  event.reset();
+  //event.reset();
   Nucleus & nucleusA = event.getNucleusA();
   Nucleus & nucleusB = event.getNucleusB();
   double rr = gRandom->Rndm();

@@ -14,7 +14,8 @@ RadialBoostHistos::RadialBoostHistos(const TString & collectionName,
 :
 Histograms(collectionName,radialBoostConfiguration,debugLevel)
 {
-  // no ops
+  appendClassName("RadialBoostHistos");
+  setInstanceName(name);
 }
 
 RadialBoostHistos::~RadialBoostHistos()

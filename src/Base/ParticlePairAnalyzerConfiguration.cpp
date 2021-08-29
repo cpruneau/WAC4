@@ -26,19 +26,14 @@ ParticleAnalyzerConfiguration(),
 binCorrPM(1.0),
 binCorrMM(1.0),
 binCorrPP(1.0),
+nBins_n2(100),          min_n2(0.0),          max_n2(1000.0),
 nBins_DeltaPlong(10),   min_DeltaPlong(-1.0), max_DeltaPlong(1.0),  range_DeltaPlong(2.0),
 nBins_DeltaPside(10),   min_DeltaPside(-1.0), max_DeltaPside(1.0),  range_DeltaPside(2.0),
 nBins_DeltaPout(10),    min_DeltaPout(-1.0),  max_DeltaPout(1.0),   range_DeltaPout(2.0),
-nBins_Dphi(36),         min_Dphi(0.0),        max_Dphi(0.0),        width_Dphi(0.0),
+nBins_Dphi(36),         min_Dphi(0.0),        max_Dphi(TMath::TwoPi()), width_Dphi(TMath::TwoPi()),
 nBins_Dphi_shft(36),    min_Dphi_shft(0.0),   max_Dphi_shft(0.0),
 nBins_Deta(39),         min_Deta(-2.0),       max_Deta(2.0),        width_Deta(4.0/39.0),
-nBins_Dy(39),           min_Dy(-2.0),         max_Dy(2.0),          width_Dy(4.0/39.0),
-fillPairs    (true),
-fill6D       (false),
-computeDptDpt(false),
-computeP2    (false),
-computeG2    (false),
-computeBF    (false)
+nBins_Dy(39),           min_Dy(-2.0),         max_Dy(2.0),          width_Dy(4.0/39.0)
 {
   validate();
 }
@@ -57,7 +52,6 @@ void ParticlePairAnalyzerConfiguration::validate()
   min_Dy   = min_y - max_y;
   max_Dy   = max_y - min_y;
   width_Dy = (max_Dy-min_Dy)/double(nBins_Dy);
-
 
   max_Dphi   = TMath::TwoPi();
   width_Dphi = max_phi/double(nBins_Dphi);
@@ -78,13 +72,7 @@ nBins_DeltaPout( source.nBins_DeltaPout ),    min_DeltaPout( source.min_DeltaPou
 nBins_Dphi( source.nBins_Dphi ),              min_Dphi( source.min_Dphi ),        max_Dphi( source.max_Dphi ),        width_Dphi( source.width_Dphi ),
 nBins_Dphi_shft( source.nBins_Dphi_shft ),    min_Dphi_shft( source.min_Dphi_shft ),   max_Dphi_shft( source.max_Dphi_shft ),
 nBins_Deta( source.nBins_Deta ),              min_Deta( source.min_Deta ),       max_Deta( source.max_Deta ),        width_Deta( source.width_Deta ),
-nBins_Dy  ( source.nBins_Dy ),                min_Dy( source.min_Dy ),         max_Dy( source.max_Dy ),          width_Dy( source.width_Dy ),
-fillPairs    ( source.fillPairs ),
-fill6D       ( source.fill6D ),
-computeDptDpt( source.computeDptDpt),
-computeP2    ( source.computeP2),
-computeG2    ( source.computeG2),
-computeBF    ( source.computeBF)
+nBins_Dy  ( source.nBins_Dy ),                min_Dy( source.min_Dy ),         max_Dy( source.max_Dy ),          width_Dy( source.width_Dy )
 {
   // no ops
 }
@@ -124,13 +112,6 @@ ParticlePairAnalyzerConfiguration & ParticlePairAnalyzerConfiguration::operator=
     min_Dy       =  source.min_Dy;
     max_Dy       =  source.max_Dy;
     width_Dy     =  source.width_Dy;
-    fillPairs    =  source.fillPairs;
-    fill6D       =  source.fill6D;
-    fillQ3D      =  source.fillQ3D;
-    computeDptDpt=  source.computeDptDpt;
-    computeP2    =  source.computeP2;
-    computeG2    =  source.computeG2;
-    computeBF    =  source.computeBF;
     }
   return *this;
 }
@@ -145,12 +126,6 @@ void ParticlePairAnalyzerConfiguration::printConfiguration(ostream & os)
   ParticleAnalyzerConfiguration::printConfiguration(os);
   os
   << " ------------------------------------------------------------------------------------------" << endl
-  << "                fillPairs: " << fillPairs       << endl
-  << "                   fill6D: " << fill6D          << endl
-  << "                  fillQ3D: " << fillQ3D         << endl
-  << "            computeDptDpt: " << computeDptDpt   << endl
-  << "                computeP2: " << computeP2       << endl
-  << "                computeG2: " << computeG2       << endl
   << "        +- bin correction: " << binCorrPM       << endl
   << "        ++ bin correction: " << binCorrPP       << endl
   << "        -- bin correction: " << binCorrMM       << endl;

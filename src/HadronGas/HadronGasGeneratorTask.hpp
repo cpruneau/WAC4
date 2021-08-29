@@ -36,6 +36,7 @@ protected:
   vector<MomentumGenerator*> momentumGenerators;
   TH1 * relativeAbundances;
   TH1 * relativeAbundancesGas;
+  bool standaloneMode;
   ClassDef(HadronGasGeneratorTask,0)
 };
 

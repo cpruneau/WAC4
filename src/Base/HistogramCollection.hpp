@@ -214,11 +214,6 @@ public:
   double calculateN1N1N1(const TH1 * h_1, const TH1 * h_2, const TH1 * h_3, TH3 * h_123);
   void calculateN2N1(const TH2 * s2, const TH1* s1, TH2 * target, int single);
   void calculateN2N1x(const TH2 * s2, const TH1* s1, TH3 * target, int single);
-  int  getDimension(const TH1* h);
-  bool sameDimensions(const TH1* h1, const TH1* h2);
-  bool sameDimensions(const TH1* h1, const TH1* h2, const TH1* h3);
-  bool sameDimensions(const TH1* h1, const TH1* h2, const TH1* h3, const TH1* h4);
-  bool sameDimensions(const TH1* h1, const TH1* h2, const TH1* h3, const TH1* h4, const TH1* h5);
 
   void calculateDptDpt(const TH2 * spp, const TH2 * spn, const TH2 * snp, const TH2 * snn,
                        const TH2 * avgp1, const TH2 * avgp2,  TH2 * s2dptdpt,  TH2 * dptdpt,
@@ -246,6 +241,7 @@ public:
 
   void setHistogram(TH1 * h, double v, double ev);
   void setHistogram(TH2 * h, double v, double ev);
+  void setHistogram(TH3 * h, double v, double ev);
 
   int  loadCollection(TFile * inputFile);
 
@@ -280,6 +276,9 @@ public:
   void symmetrizeXX(TH2 * h, bool ijNormalization);
   void reduce_n2xEtaPhi_n2DetaDphi(const TH2 * source, TH2 * target,int nEtaBins,int nPhiBins);
   void reduce_n2xEtaPhi_n2EtaEta(const TH1 * source, TH2 * target,int nEtaBins,int nPhiBins);
+
+  void reduce_n1EtaPhiN1EtaPhiOntoN1N1DetaDphi(const TH2 * h_1, TH2 * h_2, TH2 * h_12,int nDeta,int nDphi);
+
   void project_n2XYXY_n2XX(const TH2 * source, TH2 * target,int nXBins,int nYBins);
   void project_n2XYXY_n2YY(const TH2 * source, TH2 * target,int nXBins,int nYBins);
   TH2* symmetrize(TH2* h);
@@ -318,6 +317,12 @@ public:
   void squareDifferenceCollection(const HistogramCollection & collection, double sumWeights, double weight, int n);
   void squareDifferenceHistos(TH1 * hAvg, TH1 * h, double sumWeights, double weight, int n);
 
+
+  int  getDimension(const TH1* h) const;
+  bool sameDimensions(const TString & caller, const TH1* h1, const TH1* h2) const;
+  bool sameDimensions(const TString & caller, const TH1* h1, const TH1* h2, const TH1* h3) const;
+  bool sameDimensions(const TString & caller, const TH1* h1, const TH1* h2, const TH1* h3, const TH1* h4) const;
+  bool sameDimensions(const TString & caller, const TH1* h1, const TH1* h2, const TH1* h3, const TH1* h4, const TH1* h5) const;
 
   ////////////////////////////////////////////////////////////////////////////
   // Data Members - Inputs

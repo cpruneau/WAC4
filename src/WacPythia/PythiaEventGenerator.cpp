@@ -59,7 +59,7 @@ void PythiaEventGenerator::initialize()
     pythia8->ReadString( *pc->options[iOption]);
     }
   pythia8->Initialize(pc->beam,pc->target,pc->energy);
-  if (reportStart("PythiaEventGenerator",getName(),"initialize()"))
+  if (reportDebug("PythiaEventGenerator",getName(),"initialize()"))
     {
     pythia8->ListAll();
     }
@@ -90,14 +90,17 @@ void PythiaEventGenerator::execute()
     ;
   incrementEventProcessed();
   Event & event = *eventStreams[0];
+  EventProperties & ep = * eventStreams[0]->getEventProperties();
+
   Particle * interaction;
   resetParticleCounters();
   if (standaloneMode)
     {
     // In this mode, we generate one PYTHIA (pp) collision per event. One interaction vertex is
     // inserted in the event stream and PYTHIA is called to carry out the particle generation.
-    particleFactory->reset();
+    // factory and event resets done by the task iterator to avoid repetition.
     event.reset();
+    particleFactory->reset();
     resetParticleCounters();
     interaction = particleFactory->getNextObject();
     interaction->reset();
@@ -107,7 +110,6 @@ void PythiaEventGenerator::execute()
     event.setNucleusA(1.0,1.0);
     event.setNucleusB(1.0,1.0);
     generate(interaction);
-    EventProperties & ep = * eventStreams[0]->getEventProperties();
     ep.zProjectile       = 1;     // atomic number projectile
     ep.aProjectile       = 1;     // mass number projectile
     ep.nPartProjectile   = 1;     // number of participants  projectile
@@ -145,10 +147,13 @@ void PythiaEventGenerator::execute()
       {
       generate(interactions[kInter]);
       }
-    EventProperties & ep = * event.getEventProperties();
     ep.multiplicity      = getNParticlesAccepted(); // nominal multiplicity in the reference range
     ep.particlesCounted  = getNParticlesCounted();
     ep.particlesAccepted = getNParticlesAccepted();
+    }
+  if (reportDebug("PythiaEventGenerator",getName(),"execute()"))
+    {
+    ep.printProperties(cout);
     }
 }
 

@@ -132,8 +132,8 @@ protected:
   //! Set nucleus A to have the given atomic number (z) and mass number (a).
   //! @param z atomic number.
   //! @param a mass number.
-  void setNucleusA(int z, int a);
-  void setNucleusB(int z, int a);
+  void setNucleusA(unsigned int z, unsigned int a);
+  void setNucleusB(unsigned int z, unsigned int a);
 
   double    getImpactParameter() const { return b; }
   double    getCrossSection() const { return b*b/2.0; }
@@ -186,8 +186,21 @@ protected:
   {
   return *binaryMoments;
   }
+
+  void setStreamIndex(unsigned int index)
+  {
+  streamIndex = index;
+  }
+
+  unsigned int  getStreamIndex() const
+  {
+   return streamIndex;
+  }
+
+
 protected:
 
+  unsigned int  streamIndex;
   unsigned long eventIndex;
   unsigned long eventNumber;
   vector<Particle*> particles;

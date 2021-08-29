@@ -41,7 +41,8 @@ h_spt_phiY(nullptr),
 h_pt_y(nullptr),
 h_pt_phiY(nullptr)
 {
-  // no ops
+  appendClassName("ParticleHistos");
+  setInstanceName("ParticleHistos");
 }
 
 ParticleHistos::~ParticleHistos()

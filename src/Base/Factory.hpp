@@ -11,14 +11,16 @@
 #ifndef WAC_Factory
 #define WAC_Factory
 
-/////////////////////////////////////////////////////////////////////////
-//                                                                     //
-// Factory                                                             //
-//                                                                     //
-// Generic base class for factory services.
-// Does not own a store                                  //
-//                                                                     //
-/////////////////////////////////////////////////////////////////////////
+//!
+//! Factory
+//!
+//! Generic base class for factory services.
+//! A factory can be used to generate and own a large collection of objects of the same type "T". Objects are allocated on the heap and pointers "T*" to these
+//! objects kept in a large array T ** objects. The array is nominally of fixed size but is enlarged whenever more objects are needed. The factory model is useful
+//! when objects need to be repeatedly used and discarded (e.g., in data analysis of particles) because no malloc or destroy is required. The memory remains allocated
+//! and so there is no time wasted creating and destroying the objects. The reset method is to be called on a factory to indicate that a new "event" is being considered.
+//! It must evidently be possible to initialize the objects with "set" methods specific to the class "T". Use the  T * getNextObject() method to obtain an used object.
+//!
 #include <iostream>
 #include "TObject.h"
 
@@ -92,10 +94,12 @@ protected:
   {
   if (index<capacity)
     {
+    ///cout << "Factory<T>::getNextObject() Index: " << index << " Capacity: " << capacity <<  endl;
     return objects[index++];
     }
   else
     {
+    ///cout << "Factory<T>::getNextObject() Index: " << index << " Capacity: " << capacity << " ==================================  Capacity will be doubled."  << endl;
     T** keep = objects;
     long newCapacity = 2*capacity;
     objects = new T*[newCapacity];

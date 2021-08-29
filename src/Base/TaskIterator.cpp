@@ -23,12 +23,13 @@ Task(),
 timer(),
 nEventRequested(1),
 nEventReported(1),
-nEventPartialSave(10000),
+nEventPartialSave(10),
 nEventProcessed(0),
 partialSave(0),
 subsampleAnalysis(0)
 {
-  setName("TaskIterator");
+  setClassName("TaskIterator");
+  setInstanceName("TaskIterator");
 }
 
 void TaskIterator::run()
@@ -62,12 +63,15 @@ void TaskIterator::run(long nEvent, long nReport)
     if (nEventProcessed%nReport==0 )
       {
       if (reportInfo("TaskIterator",getName(),"run(...)")) cout << "Completed event # " << iEvent << endl;
+      timer.stop();
+      timer.print(cout);
       }
     if ( (subsampleAnalysis||partialSave) && nEventProcessed%nEventPartialSave==0)
       {
       savePartialTasks();
+      if (!isTaskOk()) break;
       if (subsampleAnalysis) resetTasks();
-      if (!isTaskOk()) continue;
+      postTaskOk();
       }
     }
   if (isTaskOk()) finalizeTasks();
@@ -89,3 +93,16 @@ void TaskIterator::run(long nEvent, long nReport)
     }
 }
 
+
+void TaskIterator::execute()
+{
+  ++nEventProcessed;
+  ++nEventAccepted;
+  Factory<Particle> * particleFactory = Particle::getFactory();
+  particleFactory->reset();
+  unsigned int nStreams = Event::getNEventStreams();
+  for (unsigned int iStream=0; iStream<nStreams; iStream++)
+    {
+    Event::getEventStream(iStream)->reset();
+    }
+}

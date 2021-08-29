@@ -24,7 +24,8 @@ ParticlePairHistos::ParticlePairHistos(const TString & name,
 :
 Histograms(name,configuration,debugLevel)
 {
-  // no ops
+  appendClassName("ParticlePairHistos");
+  setInstanceName(name);
 }
 
 ParticlePairHistos::~ParticlePairHistos()
@@ -58,7 +59,7 @@ void ParticlePairHistos::createHistograms()
     h_n2_etaEta         = createHistogram(bn+TString("n2_etaEta"),        ac.nBins_eta,    ac.min_eta, ac.max_eta, ac.nBins_eta, ac.min_eta, ac.max_eta, "#eta_{1}",    "#eta_{2}", "N_{2}", 1,1,1,0);
     h_n2_phiEtaPhiEta   = createHistogram(bn+TString("n2_phiEtaPhiEta"),  ac.nBins_phiEta, zero, static_cast<double>(ac.nBins_phiEta), ac.nBins_phiEta, 0.0, static_cast<double>(ac.nBins_phiEta), "#eta_{1}x#varphi_{1}","#eta_{2}x#varphi_{2}", "N_{2}", 1,1,1,0);
     h_n2_phiEtaPhiEta->SetBit(TH1::kIsNotW);    h_n2_phiEtaPhiEta->Sumw2(false);
-    if (ac.computeDptDpt || ac.computeP2 || ac.computeG2)
+    if (ac.fillP2)
       {
       h_npt_phiEtaPhiEta  = createHistogram(bn+TString("npt_phiEtaPhiEta"), ac.nBins_phiEta, zero, static_cast<double>(ac.nBins_phiEta), ac.nBins_phiEta, 0.0, static_cast<double>(ac.nBins_phiEta), "#eta_{1}x#varphi_{1}","#eta_{2}x#varphi_{2}", "Nxp_{T}", 1,1,1,0);
       h_ptn_phiEtaPhiEta  = createHistogram(bn+TString("ptn_phiEtaPhiEta"), ac.nBins_phiEta, zero, static_cast<double>(ac.nBins_phiEta), ac.nBins_phiEta, 0.0, static_cast<double>(ac.nBins_phiEta), "#eta_{1}x#varphi_{1}","#eta_{2}x#varphi_{2}", "p_{T}xN", 1,1,1,0);
@@ -80,7 +81,7 @@ void ParticlePairHistos::createHistograms()
     h_n2_yY         = createHistogram(bn+TString("n2_yY"),        ac.nBins_y,    ac.min_y, ac.max_y, ac.nBins_y, ac.min_y, ac.max_y, "y_{1}","y_{2}", "N_{2}", 1,1,0,0);
     h_n2_phiYPhiY   = createHistogram(bn+TString("n2_phiYPhiY"),  ac.nBins_phiY, zero, static_cast<double>(ac.nBins_phiY), ac.nBins_phiY, 0.0, static_cast<double>(ac.nBins_phiY), "y_{1}x#varphi_{1}","y_{2}x#varphi_{2}", "N_{2}", 1,1,0,0);
     h_n2_phiYPhiY->SetBit(TH1::kIsNotW);    h_n2_phiYPhiY->Sumw2(false);
-    if (ac.computeDptDpt || ac.computeP2 || ac.computeG2)
+    if (ac.fillP2)
       {
       h_npt_phiYPhiY  = createHistogram(bn+TString("npt_phiYPhiY"), ac.nBins_phiY, zero, static_cast<double>(ac.nBins_phiY), ac.nBins_phiY, 0.0, static_cast<double>(ac.nBins_phiY), "y_{1}x#varphi_{1}","y_{2}x#varphi_{2}", "Nxp_{T}", 1,1,0,0);
       h_ptn_phiYPhiY  = createHistogram(bn+TString("ptn_phiYPhiY"), ac.nBins_phiY, zero, static_cast<double>(ac.nBins_phiY), ac.nBins_phiY, 0.0, static_cast<double>(ac.nBins_phiY), "y_{1}x#varphi_{1}","y_{2}x#varphi_{2}", "p_{T}xN", 1,1,0,0);
@@ -131,7 +132,7 @@ void ParticlePairHistos::fill(Particle & particle1, Particle & particle2, double
       double nentries = h_n2_phiEtaPhiEta->GetEntries() + 1;
       h_n2_phiEtaPhiEta->AddBinContent(binno, weight);
       h_n2_phiEtaPhiEta->SetEntries(nentries);
-      if (ac.computeDptDpt || ac.computeP2 || ac.computeG2)
+      if (ac.fillP2)
         {
         h_ptn_phiEtaPhiEta ->AddBinContent(binno, weight*pt1);
         h_npt_phiEtaPhiEta ->AddBinContent(binno, weight*pt2);
@@ -153,7 +154,7 @@ void ParticlePairHistos::fill(Particle & particle1, Particle & particle2, double
       double nentries = h_n2_phiEtaPhiEta->GetEntries() + 1;
       h_n2_phiYPhiY->AddBinContent(binno, weight);
       h_n2_phiYPhiY->SetEntries(nentries);
-      if (ac.computeDptDpt || ac.computeP2 || ac.computeG2)
+      if (ac.fillP2)
         {
         h_ptn_phiYPhiY ->AddBinContent(binno, weight*pt1);
         h_npt_phiYPhiY ->AddBinContent(binno, weight*pt2);
@@ -177,7 +178,7 @@ void ParticlePairHistos::completeFill()
     int nbinseta = h_n2_etaEta->GetNbinsX();
     project_n2XYXY_n2XX(h_n2_phiEtaPhiEta,h_n2_etaEta,nbinseta,nbinsphi);
     project_n2XYXY_n2YY(h_n2_phiEtaPhiEta,h_n2_phiPhi,nbinseta,nbinsphi);
-    if (ac.computeDptDpt || ac.computeP2 || ac.computeG2)
+    if (ac.fillP2)
       {
       project_n2XYXY_n2XX(h_ptn_phiEtaPhiEta, h_ptn_etaEta,nbinseta,nbinsphi);
       project_n2XYXY_n2XX(h_npt_phiEtaPhiEta, h_npt_etaEta,nbinseta,nbinsphi);
@@ -191,7 +192,7 @@ void ParticlePairHistos::completeFill()
     {
     int nbinsy = h_n2_yY->GetNbinsX();
     project_n2XYXY_n2XX(h_n2_phiYPhiY,h_n2_yY,nbinsy,nbinsphi);
-    if (ac.computeDptDpt || ac.computeP2 || ac.computeG2)
+    if (ac.fillP2)
       {
       project_n2XYXY_n2XX(h_ptn_phiYPhiY,h_ptn_yY,nbinsy,nbinsphi);
       project_n2XYXY_n2XX(h_npt_phiYPhiY,h_npt_yY,nbinsy,nbinsphi);

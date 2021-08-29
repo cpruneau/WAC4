@@ -29,7 +29,7 @@ class ParticleFilter
 public:
 
   enum ChargeSelection    { AllCharges, Negative, Positive, Charged, Neutral, NotUsed };
-  enum SpeciesSelection   { AllSpecies, Photon, Lepton, Electron, Muon, Hadron, Pion, Kaon, Baryon, Proton, Lambda, ByPDG, ByUserPID };
+  enum SpeciesSelection   { AllSpecies, Photon, Lepton, Electron, Muon, Hadron, Pion, Kaon, Baryon, Proton, Lambda, Charm, ByPDG, ByUserPID };
   enum StatusSelection    { AllStatus,  Live, Decayed, Interaction };
 
   ParticleFilter(double minPt,

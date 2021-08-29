@@ -88,12 +88,14 @@ int PlotPythiaPtSpectraVsData()
   dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4/data/OutputFiles/PYTHIA/7TEV/V0AccTestHadronsOnlyWithColorReconnNoWeakDecay/PYTHIA_pp_7TeV_inelastic_P1_Sum.root");
   dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4/data/Repository/PYTHIA/7TeV/MinBias/PYTHIA_pp_7TeV_inelastic_P1_Sum.root");
 
-  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4Dev/data//OutputFiles//PYTHIA/7TEV/BetterTest/PYTHIA_pp_7TeV_inelastic_P1ND.root");
-  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4Dev/data//OutputFiles//PYTHIA/7TEV/BetterTest/PYTHIA_pp_7TeV_inelastic_P1BS.root");
-  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4Dev/data//OutputFiles//PYTHIA/7TEV/BetterTest2/PYTHIA_pp_7TeV_inelastic_P1ND.root");
-  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4Dev/data//OutputFiles//PYTHIA/7TEV/BetterTest2/PYTHIA_pp_7TeV_inelastic_P1BS.root");
+  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4/data//OutputFiles//PYTHIA/7TEV/BetterTest/PYTHIA_pp_7TeV_inelastic_P1ND.root");  // 3
+  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4/data//OutputFiles//PYTHIA/7TEV/BetterTest/PYTHIA_pp_7TeV_inelastic_P1BS.root");  // 4
+  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4/data//OutputFiles//PYTHIA/7TEV/BetterTest2/PYTHIA_pp_7TeV_inelastic_P1ND.root"); // 5
+  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4/data//OutputFiles//PYTHIA/7TEV/BetterTest2/PYTHIA_pp_7TeV_inelastic_P1BS.root"); // 6
+  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4/data//OutputFiles//PYTHIA/7TEV/BetterTest3/PYTHIA_pp_7TeV_inelastic_P1ND.root"); // 7
+  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4/data//OutputFiles//PYTHIA/7TEV/BetterTest3/PYTHIA_pp_7TeV_inelastic_P1BS.root"); // 8
 
-  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4/publishedData/Alice/PbPb/JHEP11-2018-013/HEPData-ins1657384-v1.root");
+  dataFileNames.push_back("/Users/claudeapruneau/Documents/GitHub/WAC4/publishedData/Alice/PbPb/JHEP11-2018-013/HEPData-ins1657384-v1.root");  // 9
 
 
   int status = openRootInputFiles(inputPathName, dataFileNames, inputFiles);
@@ -173,32 +175,40 @@ int PlotPythiaPtSpectraVsData()
 //!  BetterTest   radialBoostConfig->param_a     = 0.08;
 
   double maxPt = 2.0;
-  g = DataGraph::loadGraph("PP7000PtCR1ND", "p_{T}(GeV)", "1/(2#pi p_{T}) dN/dp_{T}", "PYTHIA 7.0 TeV ND", 0.0, maxPt, 1.0E-1, 1.0E5,
+  g = DataGraph::loadGraph("PP7000PtCR1ND", "p_{T}(GeV)", "1/(2#pi p_{T}) dN/dp_{T}", "PYTHIA 7.0 Unboosted", 0.0, maxPt, 1.0E-1, 1.0E5,
                            inputFiles[3], "P1ND_MB_HC_n1_ptXS", 1.0,1);
   g->setProperties(*graphConfigurations[0]);
   dataGraphs.push_back(g);
 
-  g = DataGraph::loadGraph("PP7000PtCR1BS", "p_{T}(GeV)", "1/(2#pi p_{T}) dN/dp_{T}", "PYTHIA 7.0 TeV BS", 0.0, maxPt, 1.0E-9, 1.0E4,
+  g = DataGraph::loadGraph("PP7000PtCR1BS", "p_{T}(GeV)", "1/(2#pi p_{T}) dN/dp_{T}", "Boost: #alpha=0.08", 0.0, maxPt, 1.0E-9, 1.0E4,
                            inputFiles[4], "P1BS_MB_HC_n1_ptXS", 1.0,1);
   g->setProperties(*graphConfigurations[1]);
   dataGraphs.push_back(g);
 
-  g = DataGraph::loadGraph("PP7000PtCR1ND2", "p_{T}(GeV)", "1/(2#pi p_{T}) dN/dp_{T}", "PYTHIA 7.0 TeV ND", 0.0, maxPt, 1.0E-1, 1.0E5,
-                           inputFiles[5], "P1ND_MB_HC_n1_ptXS", 1.0,1);
-  g->setProperties(*graphConfigurations[2]);
-  dataGraphs.push_back(g);
+//  g = DataGraph::loadGraph("PP7000PtCR1ND2", "p_{T}(GeV)", "1/(2#pi p_{T}) dN/dp_{T}", "PYTHIA 7.0 TeV ND", 0.0, maxPt, 1.0E-1, 1.0E5,
+//                           inputFiles[5], "P1ND_MB_HC_n1_ptXS", 1.0,1);
+//  g->setProperties(*graphConfigurations[2]);
+//  dataGraphs.push_back(g);
 
-  g = DataGraph::loadGraph("PP7000PtCR1BS2", "p_{T}(GeV)", "1/(2#pi p_{T}) dN/dp_{T}", "PYTHIA 7.0 TeV BS", 0.0, maxPt, 1.0E-9, 1.0E4,
+  g = DataGraph::loadGraph("PP7000PtCR1BS2", "p_{T}(GeV)", "1/(2#pi p_{T}) dN/dp_{T}", "Boost: #alpha=0.4", 0.0, maxPt, 1.0E-9, 1.0E4,
                            inputFiles[6], "P1BS_MB_HC_n1_ptXS", 1.0,1);
   g->setProperties(*graphConfigurations[3]);
   dataGraphs.push_back(g);
 
+//  g = DataGraph::loadGraph("PP7000PtCR1ND3", "p_{T}(GeV)", "1/(2#pi p_{T}) dN/dp_{T}", "PYTHIA 7.0 TeV ND", 0.0, maxPt, 1.0E-1, 1.0E5,
+//                           inputFiles[7], "P1ND_MB_HC_n1_ptXS", 1.0,1);
+//  g->setProperties(*graphConfigurations[2]);
+//  dataGraphs.push_back(g);
 
+  g = DataGraph::loadGraph("PP7000PtCR1BS3", "p_{T}(GeV)", "1/(2#pi p_{T}) dN/dp_{T}", "Boost: #alpha=0.99", 0.0, maxPt, 1.0E-9, 1.0E4,
+                           inputFiles[8], "P1BS_MB_HC_n1_ptXS", 1.0,1);
+  g->setProperties(*graphConfigurations[4]);
+  dataGraphs.push_back(g);
 
   g = DataGraph::loadGraph("PbPb2760PtC1", "p_{T}(GeV)", "1/(2#pi p_{T}) dN/dp_{T}", "PbPb 2.76 TeV h^{#pm} 1", 0.0, maxPt, 1.0E-6, 1.0E4,
-                           inputFiles[7], "Table 1","Hist1D_y1","Hist1D_y1_e1","Hist1D_y1_e2","Graph1D_y1");
+                           inputFiles[9], "Table 1","Hist1D_y1","Hist1D_y1_e1","Hist1D_y1_e2","Graph1D_y1");
   if (!g) return 1;
-  g->setProperties(*graphConfigurations[4]);
+  g->setProperties(*graphConfigurations[6]);
   dataGraphs.push_back(g);
 
 //  plotter->plot("PythiaVsXsect-PP-Pt-BS-HighPt", landscapeLogY, "p_{T}(GeV)", 0.0, maxPt,  "1/(2#pi p_{T}) dN/dp_{T}",1.0E-9, 1.0E4,

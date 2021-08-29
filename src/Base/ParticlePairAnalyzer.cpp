@@ -33,6 +33,8 @@ nDerivedHistos(0)
   _configuration->createHistograms  = true;
   setConfiguration(_configuration);
   setReportLevel(_selectedLevel);
+  appendClassName("ParticlePairAnalyzer");
+  setInstanceName(_name);
   eventFilters    = _eventFilters;
   particleFilters = _particleFilters;
 }
@@ -110,7 +112,7 @@ void ParticlePairAnalyzer::createHistograms()
       histograms.push_back(histos);
       }
     // pairs
-    if (ac->fillPairs)
+    if (true)
       {
       for (unsigned int iParticleFilter1=0; iParticleFilter1<nParticleFilters; iParticleFilter1++ )
         {
@@ -129,8 +131,7 @@ void ParticlePairAnalyzer::createHistograms()
         }
       }
     // derived pairs
-    if (ac->fillPairs &&
-        ac->calculateDerivedHistograms)
+    if (ac->calculateDerivedHistograms)
       {
       if (reportInfo("ParticlePairAnalyzer",getName(),"createHistograms()"))
         {
@@ -153,8 +154,7 @@ void ParticlePairAnalyzer::createHistograms()
         }
       }
     // combined pair histograms such as CI and CD
-    if (ac->fillPairs &&
-        ac->calculateDerivedHistograms &&
+    if (ac->calculateDerivedHistograms &&
         ac->calculateCombinedHistograms)
       {
       if (reportInfo("ParticlePairAnalyzer",getName(),"createHistograms()"))
@@ -194,10 +194,10 @@ void ParticlePairAnalyzer::createHistograms()
 
 void ParticlePairAnalyzer::loadHistograms(TFile * inputFile)
 {
-  if (reportStart("ParticlePairAnalyzer",getName(),"loadHistograms(TFile * inputFile)"))
+  TString fct = "loadHistograms(TFile * inputFile)";
+  if (reportStart(fct))
     ;
-  if (reportEnd("ParticlePairAnalyzer",getName(),"loadHistograms(TFile * inputFile)"))
-    ;
+  if (ptrFileExist(fct,inputFile)) return;
 }
 
 
@@ -264,30 +264,26 @@ void ParticlePairAnalyzer::execute()
     //histos->fill(nAccepted,totalEnergy, 1.0);
 
     // Fill pairs
-    if (ac.fillPairs)
+    for (unsigned int iParticle1=0; iParticle1<nParticles; iParticle1++)
       {
-
-      for (unsigned int iParticle1=0; iParticle1<nParticles; iParticle1++)
+      Particle & particle1 = * event.getParticleAt(iParticle1);
+      for (unsigned int iParticle2=0; iParticle2<nParticles; iParticle2++)
         {
-        Particle & particle1 = * event.getParticleAt(iParticle1);
-        for (unsigned int iParticle2=0; iParticle2<nParticles; iParticle2++)
+        if (iParticle1==iParticle2) continue;
+        Particle & particle2 = * event.getParticleAt(iParticle2);
+        for (unsigned int iParticleFilter1=0; iParticleFilter1<nParticleFilters; iParticleFilter1++)
           {
-          if (iParticle1==iParticle2) continue;
-          Particle & particle2 = * event.getParticleAt(iParticle2);
-          for (unsigned int iParticleFilter1=0; iParticleFilter1<nParticleFilters; iParticleFilter1++)
+          if (!particleFilters[iParticleFilter1]->accept(particle1)) continue;
+          for (unsigned int iParticleFilter2=0; iParticleFilter2<nParticleFilters; iParticleFilter2++)
             {
-            if (!particleFilters[iParticleFilter1]->accept(particle1)) continue;
-            for (unsigned int iParticleFilter2=0; iParticleFilter2<nParticleFilters; iParticleFilter2++)
-              {
-              if (!particleFilters[iParticleFilter2]->accept(particle2))  continue;
-              index = basePair+iParticleFilter1*nParticleFilters+iParticleFilter2;
-              ParticlePairHistos * histos = (ParticlePairHistos *) histograms[index];
-              histos->fill(particle1,particle2, 1.0);
-              } // iParticleFilter2
-            } // iParticleFilter1
-          } //iParticle2
-        } // iParticle1
-      } // pairs
+            if (!particleFilters[iParticleFilter2]->accept(particle2))  continue;
+            index = basePair+iParticleFilter1*nParticleFilters+iParticleFilter2;
+            ParticlePairHistos * histos = (ParticlePairHistos *) histograms[index];
+            histos->fill(particle1,particle2, 1.0);
+            } // iParticleFilter2
+          } // iParticleFilter1
+        } //iParticle2
+      } // iParticle1
     } // eventFilters
 }
 
@@ -337,7 +333,7 @@ void ParticlePairAnalyzer::calculateDerivedHistograms()
       histos->calculateAverages();
       
       }
-    if (!ac.fillPairs) continue;
+
     // pairs
     if (reportInfo("ParticlePairAnalyzer",getName(),"calculateDerivedHistograms()"))
       {

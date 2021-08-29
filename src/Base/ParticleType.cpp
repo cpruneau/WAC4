@@ -222,18 +222,15 @@ ParticleDecayMode & ParticleType::generateDecayMode()
 {
   if (!decayRndmSelector)
     {
-    cout << " ParticleType::generateDecayMode() mothe fucking bithc " << endl;
     exit(0);
     }
   int index = decayRndmSelector->generate();
   if (index<0)
     {
-    cout << " ParticleType::generateDecayMode() ass hole" << endl;
     exit(0);
     }
   else if (index>= decayModes.size())
     {
-    cout << " ParticleType::generateDecayMode() fucking moron!!!!!!!!" << endl;
     index = decayModes.size()-1;
     }
   return decayModes[index];

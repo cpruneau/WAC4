@@ -59,7 +59,7 @@ void Event::clear()
   if (binaryMoments) binaryMoments->reset();
   if (participantMoments) participantMoments->reset();
   if (eventProperties) eventProperties->reset();
-  Particle::getFactory()->reset();
+  //Particle::getFactory()->reset();
 }
 
 // ====================================================
@@ -76,7 +76,6 @@ void Event::reset()
   if (binaryMoments) binaryMoments->reset();
   if (participantMoments) participantMoments->reset();
   if (eventProperties) eventProperties->reset();
-  Particle::getFactory()->reset();
 }
 
 
@@ -162,15 +161,17 @@ vector<Particle*> Event::getNucleonNucleonInteractions()
 //}
 
 
-void Event::setNucleusA(int z, int a)
+void Event::setNucleusA(unsigned int z, unsigned int a)
 {
   if (!nucleusA) nucleusA = new Nucleus();
+  if (nucleusA->getNProtons()==z && nucleusA->getNNucleons()==a) return;
   nucleusA->defineAs(z,a);
 }
 
-void Event::setNucleusB(int z, int a)
+void Event::setNucleusB(unsigned int z, unsigned  int a)
 {
   if (!nucleusB) nucleusB = new Nucleus();
+  if (nucleusB->getNProtons()==z && nucleusB->getNNucleons()==a) return;
   nucleusB->defineAs(z,a);
 }
 
@@ -181,6 +182,7 @@ void Event::setNucleusB(int z, int a)
 void Event::printProperties(ostream & output)
  {
  output << "----------------------------------------------------------------" << endl;
+ output << "      stream index : " << streamIndex << endl;
  output << "       event index : " << eventIndex << endl;
  output << "      event number : " << eventNumber << endl;
  output << " number of particle: " << particles.size() << endl;
@@ -197,7 +199,9 @@ Event * Event::getEventStream(unsigned int index)
 {
   while (index>=eventStreams.size())
     {
-    eventStreams.push_back(new Event());
+    Event * event = new Event();
+    event->setStreamIndex(index);
+    eventStreams.push_back(event);
     }
   return eventStreams[index];
 }

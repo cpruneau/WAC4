@@ -32,9 +32,9 @@ nBins_phiEta(720),
 nBins_phiEtaPt(7200),
 nBins_phiY(720),
 nBins_phiYPt(7200),
-fillEta (true),
-fillY   (false),
-fill3D  (false)
+fillEta(true),
+fillY(false),
+fillP2(false)
 {
   min_phi   = 0.0;
   max_phi   = TMath::TwoPi();
@@ -55,9 +55,9 @@ nBins_phiEta( source.nBins_phiEta ),
 nBins_phiEtaPt( source.nBins_phiEtaPt ),
 nBins_phiY( source.nBins_phiY ),
 nBins_phiYPt( source.nBins_phiYPt ),
-fillEta  ( source.fillEta ),
-fillY    ( source.fillY   ),
-fill3D   ( source.fill3D  )
+fillEta(source.fillEta),
+fillY(source.fillY),
+fillP2(source.fillP2)
 {
 }
 
@@ -95,9 +95,9 @@ ParticleAnalyzerConfiguration & ParticleAnalyzerConfiguration::operator=(const P
     nBins_phiEtaPt  =  source.nBins_phiEtaPt;
     nBins_phiY      =  source.nBins_phiY;
     nBins_phiYPt    =  source.nBins_phiYPt;
-    fillEta         =  source.fill3D;
+    fillEta         =  source.fillEta;
     fillY           =  source.fillY;
-    fill3D          =  source.fill3D;
+    fillP2          =  source.fillP2;
     }
   return *this;
 }
@@ -133,8 +133,9 @@ void ParticleAnalyzerConfiguration::printConfiguration(ostream & os)
   << "                 nBinsPhi: " << nBins_phi   << endl
   << "                   minPhi: " << min_phi     << endl
   << "                   maxPhi: " << max_phi     << endl
-  << "                   fill3D: " << fill3D      << endl
-  << "                    fillY: " << fillY       << endl;
+  << "                  fillEta: " << fillEta     << endl
+  << "                    fillY: " << fillY       << endl
+  << "                   fillP2: " << fillP2      << endl;
 }
 
 int ParticleAnalyzerConfiguration::getIxEtaPhi(double eta, double phi)
@@ -149,7 +150,7 @@ int ParticleAnalyzerConfiguration::getIxEtaPhi(double eta, double phi)
       return nBins_phi*iEta + iPhi;
       }
     return -1;
-  }
+    }
   return -1;
 }
 

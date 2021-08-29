@@ -228,13 +228,31 @@ int ParticleTypeCollection::findIndexForPrivateCode(int privateCode)
   return -1;
 }
 
+int ParticleTypeCollection::findIndexForType(ParticleType * type)
+{
+  for (unsigned int iPart = 0; iPart < size(); iPart++)
+  {
+  if (type == objects[iPart]) return iPart;
+  }
+  return -1;
+}
+
 ParticleType * ParticleTypeCollection::findPdgCode(int pdgCode)
 {
   for (unsigned int iPart = 0; iPart<size(); iPart++)
   {
-  if (pdgCode == objects[iPart]->getPdgCode()) return objects[iPart];
+  if (pdgCode == objects[iPart]->getPdgCode())
+    return objects[iPart];
   }
-  return nullptr;
+  // code not found in the current table.
+  // create new type and add to the table.
+  ParticleType * newType = new ParticleType();
+  newType->setName("unknown");
+  newType->setTitle("unknown");
+  newType->setPdgCode(pdgCode);
+  push_back(newType);
+  cout << " ------------------------------------------------ Added new type with pdgCode=" << pdgCode << endl;
+  return newType;
 }
 
 ParticleType * ParticleTypeCollection::findPrivateCode(int privateCode)

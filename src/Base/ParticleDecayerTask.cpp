@@ -27,6 +27,8 @@ decayer()
   TaskConfiguration & config = * getConfiguration();
   config.useParticles    = true;
   config.useEventStream0 = true;
+  appendClassName("ParticleDecayerTask");
+  setInstanceName("ParticleDecayerTask");
   setReportLevel(_selectedLevel);
  }
 
@@ -40,15 +42,12 @@ decayer()
 void ParticleDecayerTask::execute()
 {
   if (reportDebug("ParticleDecayerTask",getName(),"execute()"))
-    cout << "---1---" << endl;
+    ;
   incrementEventProcessed();
-  if (reportDebug("ParticleDecayerTask",getName(),"execute()"))
-    cout << "---2---" << endl;
   Event & event = * eventStreams[0];
-  if (reportDebug("ParticleDecayerTask",getName(),"execute()"))
-    cout << "---3---" << endl;
   int nParticles = event.getNParticles();
-
+//  if (reportInfo("ParticleDecayerTask",getName(),"execute()"))
+//    cout << "     nParticles : " << nParticles << endl;
   if (nParticles< 1)
     {
     if (reportWarning("ParticleDecayerTask",getName(),"execute()"))
@@ -60,13 +59,13 @@ void ParticleDecayerTask::execute()
   bool done = false;
   while (!done)
     {
-    if (reportDebug("ParticleDecayerTask",getName(),"execute()"))
-      cout << "iParticle:" << iParticle << endl;
+//    if (reportInfo("ParticleDecayerTask",getName(),"execute()"))
+//      cout << "iParticle:" << iParticle << endl;
     Particle & parent = * event.getParticleAt(iParticle);
     if (parent.isLive() &&  !parent.isStable() && !parent.isInteraction() )
       {
-      if (reportDebug("ParticleDecayerTask",getName(),"execute()"))
-        cout << "isLive()" <<  endl;
+//      if (reportInfo("ParticleDecayerTask",getName(),"execute()"))
+//        cout << "isLive()" <<  endl;
       ParticleType   &    parentType      = parent.getType();
       TLorentzVector &    parentMomentum  = parent.getMomentum();
       TLorentzVector &    parentPosition  = parent.getPosition();
@@ -75,9 +74,13 @@ void ParticleDecayerTask::execute()
       switch (nChildren)
         {
           case 1:
+          if (reportInfo("ParticleDecayerTask",getName(),"execute()"))
+            cout << "case 1  parentType==" << parent.getName() << endl;
           break;
           case 2:
           {
+//          if (reportInfo("ParticleDecayerTask",getName(),"execute()"))
+//            cout << "               case 2  parentType==" << parent.getName() << endl;
           Particle * child1 = particleFactory->getNextObject();
           Particle * child2 = particleFactory->getNextObject();
           ParticleType   & childType1 = decayMode.getChildType(0); child1->setType(&childType1); child1->setLive(true);
@@ -91,9 +94,19 @@ void ParticleDecayerTask::execute()
                          parentPosition,
                          childType1,p1,r1,
                          childType2,p2,r2);
-          event.add(child1);
-          event.add(child2);
+          event.add(child1); child1->setLive(true);
+          event.add(child2); child2->setLive(true);
           parent.setDecayed(true);
+
+//          cout << " 2-decay:" << endl;
+//          cout << " Parent:" << endl;
+//          parent.printProperties(cout);
+//          cout << " Child 1:" << endl;
+//          child1->printProperties(cout);
+//          cout << " Child 2:" << endl;
+//          child2->printProperties(cout);
+
+
           nParticles += 2;
           }
           break;
@@ -101,6 +114,8 @@ void ParticleDecayerTask::execute()
 
           case 3:
           {
+//          if (reportInfo("ParticleDecayerTask",getName(),"execute()"))
+//            cout << "                           case 3  parentType==" << parent.getName() << endl;
           Particle * child1 = particleFactory->getNextObject();
           Particle * child2 = particleFactory->getNextObject();
           Particle * child3 = particleFactory->getNextObject();
@@ -119,16 +134,29 @@ void ParticleDecayerTask::execute()
                          childType1,p1,r1,
                          childType2,p2,r2,
                          childType3,p3,r3);
-          event.add(child1);
-          event.add(child2);
-          event.add(child3);
+          event.add(child1); child1->setLive(true);
+          event.add(child2); child2->setLive(true);
+          event.add(child3); child3->setLive(true);
           parent.setDecayed(true);
+
+//          cout << " 3-decay:" << endl;
+//          cout << " Parent:" << endl;
+//          parent.printProperties(cout);
+//          cout << " Child 1:" << endl;
+//          child1->printProperties(cout);
+//          cout << " Child 2:" << endl;
+//          child2->printProperties(cout);
+//          cout << " Child 3:" << endl;
+//          child3->printProperties(cout);
+
           nParticles += 3;
           }
           break;
           case 4:
           {
           //cout << "ParticleDecayerTask::execute() skipping 4" << endl;
+//          if (reportInfo("ParticleDecayerTask",getName(),"execute()"))
+//            cout << "                      case 4  parentType==" << parent.getName() << endl;
 
           break;
   //        Particle * child1 = particleFactory->getNextObject();
@@ -154,10 +182,10 @@ void ParticleDecayerTask::execute()
   //                       childType2,p2,r2,
   //                       childType3,p3,r3,
   //                       childType4,p4,r4);
-  //        event.add(child1);
-  //        event.add(child2);
-  //        event.add(child3);
-  //        event.add(child4);
+  //        event.add(child1); child1->setLive(true);
+  //        event.add(child2); child2->setLive(true);
+  //        event.add(child3); child3->setLive(true);
+  //        event.add(child4); child4->setLive(true);
   //        parent.setDecayed(true);
   //        nParticles += 4;
           }
@@ -170,6 +198,10 @@ void ParticleDecayerTask::execute()
     iParticle++;
     done = (iParticle >= event.getNParticles());
     }
+  nParticles = event.getNParticles();
+//  if (reportInfo("ParticleDecayerTask",getName(),"execute()"))
+//    cout << "     nParticles : " << nParticles << endl;
+
  // cout << "ParticleDecayerTask::execute() DONE" << endl;
 }
 

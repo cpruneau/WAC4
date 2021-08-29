@@ -15,7 +15,8 @@ ParticlePairDerivedHistos::ParticlePairDerivedHistos(const TString & name,
 :
 Histograms(name,configuration,debugLevel)
 {
-  // no ops
+  appendClassName("ParticlePairDerivedHistos");
+  setInstanceName(name);
 }
 
 
@@ -70,7 +71,7 @@ void ParticlePairDerivedHistos::createHistograms()
     h_R2_DetaDphi          = createHistogram(bn+TString("R2_DetaDphi"),         ac.nBins_Deta,  ac.min_Deta,  ac.max_Deta,  ac.nBins_Dphi,  ac.min_Dphi,      ac.max_Dphi,      "#Delta#eta",  "#Delta#varphi", "R_{2}", 0,1,0,0);
     h_R2_DetaDphi_shft     = createHistogram(bn+TString("R2_DetaDphi_shft"),    ac.nBins_Deta,  ac.min_Deta,  ac.max_Deta,  ac.nBins_Dphi,  ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta",  "#Delta#varphi", "R_{2}", 0,1,0,0);
 
-    if (ac.computeBF)
+    if (ac.fillEta)
       {
       h_bf12_phiEtaPhiEta    = createHistogram(bn+TString("bf12_phiEtaPhiEta"),   ac.nBins_phiEta, zero,nBinsPhiEta, ac.nBins_phiEta, zero,nBinsPhiEta,       "#eta x #varphi", "#eta x #varphi","n_{2}^{12}/n_{1}^{2}", false, true, false, false);
       h_bf12_etaEta          = createHistogram(bn+TString("bf12_etaEta"),         ac.nBins_eta,   ac.min_eta,   ac.max_eta,   ac.nBins_eta,   ac.min_eta,  ac.max_eta,            "#eta_{1}", "#eta_{2}",         "n_{2}^{12}/n_{1}^{2}", false, true, false, false);
@@ -84,7 +85,7 @@ void ParticlePairDerivedHistos::createHistograms()
       h_bf21_DetaDphi_shft   = createHistogram(bn+TString("bf21_DetaDphi_shft"),  ac.nBins_Deta,  ac.min_Deta,  ac.max_Deta,  ac.nBins_Dphi,  ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta#eta", "#Delta#varphi",  "n_{2}^{21}/n_{1}^{1}", false, true, false, false);
       }
 
-    if (ac.computeP2)
+    if (ac.fillP2)
       {
       h_pt1pt1_phiEtaPhiEta  = createHistogram(bn+TString("pt1pt1_phiEtaPhiEta"), ac.nBins_phiEta, zero,nBinsPhiEta, ac.nBins_phiEta, zero,nBinsPhiEta,       "#eta_{1} x #varphi_{1}", "#eta_{2} x #varphi_{2}", "pt1pt1", 0,1,0,0);
       h_pt1pt1_etaEta        = createHistogram(bn+TString("pt1pt1_etaEta"),       ac.nBins_eta,   ac.min_eta,   ac.max_eta,   ac.nBins_eta,   ac.min_eta,  ac.max_eta,            "#eta_{1}",   "#eta_{2}",      "pt1pt1", 0,1,0,0);
@@ -110,7 +111,7 @@ void ParticlePairDerivedHistos::createHistograms()
       }
     }
 
-  if (ac.computeG2)
+  if (ac.fillP2)
     {
     h_G2_phiEtaPhiEta      = createHistogram(bn+TString("G2_phiEtaPhiEta"),     ac.nBins_phiEta, zero,nBinsPhiEta, ac.nBins_phiEta, zero,nBinsPhiEta,       "#eta x #varphi", "#eta x #varphi","G_{2}", 0,1,0,0);
     h_G2_etaEta            = createHistogram(bn+TString("G2_etaEta"),           ac.nBins_eta,   ac.min_eta,   ac.max_eta,   ac.nBins_eta,   ac.min_eta,  ac.max_eta,            "#eta_{1}", "#eta_{2}",         "G_{2}", 0,1,0,0);
@@ -134,7 +135,7 @@ void ParticlePairDerivedHistos::createHistograms()
     h_R2_DyDphi         = createHistogram(bn+TString("R2_DyDphi"),         ac.nBins_Dy,  ac.min_Dy,  ac.max_Dy,  ac.nBins_Dphi,  ac.min_Dphi,      ac.max_Dphi,      "#Delta y", "#Delta#varphi", "R_{2}", 0,1,0,0);
 
 
-    if (ac.computeBF)
+    if (ac.fillP2)
       {
       h_bf12_phiYPhiY     = createHistogram(bn+TString("bf12_phiYPhiY"),     ac.nBins_phiY, zero,double(ac.nBins_phiY), ac.nBins_phiY, zero,double(ac.nBins_phiY),         "y_{1} x #varphi_{1}", "y_{2} x #varphi_{2}", "n_{2}^{12}/n_{1}^{2}", false, true, false, false);
       h_bf12_yY           = createHistogram(bn+TString("bf12_yY"),           ac.nBins_y,   ac.min_y,   ac.max_y,   ac.nBins_y,   ac.min_y,  ac.max_y,                  "y_{1}",    "y_{2}", "n_{2}^{12}/n_{1}^{2}", false, true, false, false);
@@ -146,7 +147,7 @@ void ParticlePairDerivedHistos::createHistograms()
       h_bf21_DyDphi_shft  = createHistogram(bn+TString("bf21_DyDphi_shft"),  ac.nBins_Dy,  ac.min_Dy,  ac.max_Dy,  ac.nBins_Dphi,  ac.min_Dphi_shft, ac.max_Dphi_shft, "#Delta y", "#Delta#varphi", "n_{2}^{21}/n_{1}^{1}", false, true, false, false);
       }
 
-    if (ac.computeP2)
+    if (ac.fillP2)
       {
       h_pt1pt1_phiYPhiY   = createHistogram(bn+TString("pt1pt1_phiYPhiY"),   ac.nBins_phiY, zero,double(ac.nBins_phiY), ac.nBins_phiY, zero,double(ac.nBins_phiY),         "y_{1} x #varphi_{1}", "y_{2} x #varphi_{2}", "pt1pt1", 0,1,0,0);
       h_pt1pt1_yY         = createHistogram(bn+TString("pt1pt1_yY"),         ac.nBins_y,   ac.min_y,   ac.max_y,   ac.nBins_y,   ac.min_y,  ac.max_y,                  "y_{1}",    "y_{2}", "pt1pt1", 0,1,0,0);
@@ -167,7 +168,7 @@ void ParticlePairDerivedHistos::createHistograms()
 
       }
 
-    if (ac.computeG2)
+    if (ac.fillP2)
       {
       h_G2_phiYPhiY       = createHistogram(bn+TString("G2_phiYPhiY"),       ac.nBins_phiY, zero,double(ac.nBins_phiY), ac.nBins_phiY, zero,double(ac.nBins_phiY),         "y_{1} x #varphi_{1}", "y_{2} x #varphi_{2}", "G_{2}", 0,1,0,0);
       h_G2_yY             = createHistogram(bn+TString("G2_yY"),             ac.nBins_y,   ac.min_y,   ac.max_y,   ac.nBins_y,   ac.min_y,  ac.max_y,                  "y_{1}",    "y_{2}", "G_{2}", 0,1,0,0);
@@ -388,7 +389,7 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleHistos   
     shiftY(*h_n2_DetaDphi,      *h_n2_DetaDphi_shft,      ac.nBins_Dphi_shft);
     shiftY(*h_R2_DetaDphi,      *h_R2_DetaDphi_shft,      ac.nBins_Dphi_shft);
 
-    if (ac.computeBF)
+    if (ac.fillP2)
       {
       calculateBf( pairHistos.h_n2_phiEtaPhiEta,part1Histos.h_n1_phiEta,part2Histos.h_n1_phiEta,h_bf12_phiEtaPhiEta,h_bf21_phiEtaPhiEta );
       calculateBf( pairHistos.h_n2_etaEta,part1Histos.h_n1_phiEta,part2Histos.h_n1_phiEta,h_bf12_etaEta,h_bf21_etaEta );
@@ -399,7 +400,7 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleHistos   
       shiftY(*h_bf21_DetaDphi, *h_bf21_DetaDphi_shft, ac.nBins_Dphi_shft);
       }
 
-    if (ac.computeDptDpt || ac.computeP2  || ac.computeG2)
+    if (ac.fillP2)
       {
       calculateN1N1_H1H1H2( part1Histos.h_pt_phi,      part2Histos.h_pt_phi,      h_pt1pt1_phiPhi,       1.0, 1.0);
       calculateN1N1_H1H1H2( part1Histos.h_pt_eta,      part2Histos.h_pt_eta,      h_pt1pt1_etaEta,       1.0, 1.0);
@@ -433,7 +434,7 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleHistos   
       shiftY(*h_ptpt_DetaDphi,    *h_ptpt_DetaDphi_shft,    ac.nBins_Dphi_shft);
        }
 
-      if (ac.computeP2)
+      if (ac.fillP2)
         {
       /// calculate average pt base on h_pt_eta histograms
       double avgPt1Eta = avgValue(part1Histos.h_pt_eta);
@@ -449,7 +450,7 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleHistos   
       shiftY(*h_P2_DetaDphi,*h_P2_DetaDphi_shft, ac.nBins_Dphi_shft);
       }
 
-    if (ac.computeG2)
+    if (ac.fillP2)
       {
       calculateG2_H2H2H2H2( pairHistos.h_ptpt_phiEtaPhiEta, h_n1n1_phiEtaPhiEta,  h_pt1pt1_phiEtaPhiEta, h_G2_phiEtaPhiEta, ijNormalization, bincorrection, 1.0);
       calculateG2_H2H2H2H2( pairHistos.h_ptpt_etaEta, h_n1n1_etaEta,  h_pt1pt1_etaEta, h_G2_etaEta, ijNormalization, bincorrection, 1.0);
@@ -492,7 +493,7 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleHistos   
     shiftY(*h_n2_DyDphi,*h_n2_DyDphi_shft,ac.nBins_Dphi_shft);
     shiftY(*h_R2_DyDphi,*h_R2_DyDphi_shft,ac.nBins_Dphi_shft);
 
-    if (ac.computeBF)
+    if (ac.fillP2)
       {
       calculateBf( pairHistos.h_n2_phiYPhiY,part1Histos.h_n1_phiY,part2Histos.h_n1_phiY,h_bf12_phiYPhiY,h_bf21_phiYPhiY );
       calculateBf( pairHistos.h_n2_yY,part1Histos.h_n1_phiY,part2Histos.h_n1_phiY,h_bf12_yY,h_bf21_yY );
@@ -502,7 +503,7 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleHistos   
       shiftY(*h_bf21_DyDphi, *h_bf21_DyDphi_shft, ac.nBins_Dphi_shft);
       }
 
-    if (ac.computeDptDpt || ac.computeP2  || ac.computeG2)
+    if (ac.fillP2)
       {
       calculateN1N1_H1H1H2( part1Histos.h_pt_y,    part2Histos.h_pt_y,        h_pt1pt1_yY,       1.0, 1.0);
       calculateN1N1_H2H2H2( part1Histos.h_pt_phiY, part2Histos.h_pt_phiY,     h_pt1pt1_phiYPhiY, 1.0, 1.0);
@@ -524,7 +525,7 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleHistos   
       symmetrizeDeltaEtaDeltaPhi(h_DptDpt_DyDphi,ijNormalization);
       shiftY(*h_DptDpt_DyDphi,  *h_DptDpt_DyDphi_shft,  ac.nBins_Dphi_shft);
       }
-    if (ac.computeP2)
+    if (ac.fillP2)
       {
       double avgPt1Y = avgValue(part1Histos.h_pt_y);
       double avgPt2Y = avgValue(part2Histos.h_pt_y);
@@ -536,7 +537,7 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleHistos   
       symmetrizeDeltaEtaDeltaPhi(h_P2_DyDphi,ijNormalization);
       shiftY(*h_P2_DyDphi,*h_P2_DyDphi_shft,ac.nBins_Dphi_shft);
       }
-    if (ac.computeG2)
+    if (ac.fillP2)
       {
       calculateG2_H2H2H2H2( pairHistos.h_ptpt_phiYPhiY, h_n1n1_phiYPhiY,  h_pt1pt1_phiYPhiY, h_G2_phiYPhiY, ijNormalization, bincorrection, 1.0);
       calculateG2_H2H2H2H2( pairHistos.h_ptpt_yY,       h_n1n1_yY,        h_pt1pt1_yY,       h_G2_yY,       ijNormalization, bincorrection, 1.0);

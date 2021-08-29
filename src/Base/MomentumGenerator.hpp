@@ -14,6 +14,8 @@
 #include <TLorentzVector.h>
 
 using std::vector;
+using std::cout;
+using std::endl;
 
 class MomentumGenerator
 {
@@ -28,12 +30,21 @@ public:
     CylindricalHistoPtUniformY
   };
 
-  MomentumGenerator(TRandom * selectedRandom = gRandom);
+  //! stat : 1 Fermi Dirac
+  //!     -1 : bose einstein
+  MomentumGenerator(TRandom * _selectedRandom);
+  MomentumGenerator(const TString & _partName, double _mass, double _tMin, double _tMax, double _tWidth, double _stat, TRandom * _selectedRandom= gRandom);
   virtual ~MomentumGenerator() {}
   virtual TLorentzVector  generate(GeneratorType selectedType, vector<double>& parameters, TH1 * histogramP = nullptr);
+  virtual TLorentzVector  generate(double temperature);
 
 protected:
 
+  TString        partName;
+  double         mass;
+  double         tMin, tMax, tWidth;
+  double         stat;
+  vector<TH1*>   histograms;
   TRandom *      random;
 
   ClassDef(MomentumGenerator,0)

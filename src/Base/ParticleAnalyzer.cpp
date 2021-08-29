@@ -30,6 +30,7 @@ Task()
   _configuration->useParticles      = true;
   _configuration->createHistograms  = true;
   _configuration->saveHistograms    = true;
+  appendClassName("ParticleAnalyzer");
   setConfiguration(_configuration);
   setReportLevel(_selectedLevel);
   eventFilters    = _eventFilters;
@@ -123,6 +124,7 @@ void ParticleAnalyzer::execute()
     for (unsigned int iParticle=0; iParticle<nParticles; iParticle++)
       {
       Particle & particle = * event->getParticleAt(iParticle);
+     // particle.printProperties(cout);
       for (unsigned int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
         {
         ParticleHistos * histos = (ParticleHistos *) histograms[iParticleFilter+iEventFilter*nParticleFilters];

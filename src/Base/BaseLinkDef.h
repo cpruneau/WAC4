@@ -11,6 +11,7 @@
 #pragma link C++ class DataGraph+;
 #pragma link C++ class Factory+;
 #pragma link C++ class Factory<Particle>+;
+#pragma link C++ class Factory<ParticleDigit>+;
 
 #pragma link C++ class Collection+;
 #pragma link C++ class Collection<TF1>+;
@@ -77,6 +78,7 @@
 #pragma link C++ class ParticleHistos+;
 #pragma link C++ class ParticleAnalyzerConfiguration+;
 #pragma link C++ class ParticleAnalyzer+;
+#pragma link C++ class ParticleAnalyzerV2+;
 #pragma link C++ class ParticlePlotter+;
 #pragma link C++ class ParticlePairAnalyzer+;
 #pragma link C++ class ParticlePairAnalyzerConfiguration+;
@@ -84,15 +86,25 @@
 #pragma link C++ class ParticlePairDerivedHistos+;
 #pragma link C++ class ParticlePairFilter+;
 #pragma link C++ class ParticlePairHistos+;
-#pragma link C++ class ParticleHistosMPA+;
-#pragma link C++ class ParticleHistosMPADerived+;
-#pragma link C++ class ParticlePairHistosMPA+;
-#pragma link C++ class ParticlePairHistosMPADerived+;
-#pragma link C++ class ParticlePairHistosMPACombined+;
-#pragma link C++ class ParticleTripletHistosMPA+;
-#pragma link C++ class ParticleTripletHistosMPADerived+;
-#pragma link C++ class ParticleQuadHistosMPA+;
-#pragma link C++ class ParticleQuadHistosMPADerived+;
+
+#pragma link C++ class ParticleDigit+;
+#pragma link C++ class ParticleHistosV2+;
+#pragma link C++ class ParticlePairAnalyzerV2+;
+#pragma link C++ class ParticlePairCombinedHistosV2+;
+#pragma link C++ class ParticlePairDerivedHistosV2+;
+#pragma link C++ class ParticlePairHistosV2+;
+
+
+
+//#pragma link C++ class ParticleHistosMPA+;
+//#pragma link C++ class ParticleHistosMPADerived+;
+//#pragma link C++ class ParticlePairHistosMPA+;
+//#pragma link C++ class ParticlePairHistosMPADerived+;
+//#pragma link C++ class ParticlePairHistosMPACombined+;
+//#pragma link C++ class ParticleTripletHistosMPA+;
+//#pragma link C++ class ParticleTripletHistosMPADerived+;
+//#pragma link C++ class ParticleQuadHistosMPA+;
+//#pragma link C++ class ParticleQuadHistosMPADerived+;
 
 #pragma link C++ class NucleonNucleonCollisionGeneratorConfiguration+;
 #pragma link C++ class NucleonNucleonCollisionGenerator+;

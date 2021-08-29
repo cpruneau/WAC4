@@ -39,19 +39,19 @@ if [[ ! (-d lib) ]] then
   mkdir lib;
 fi
 if [[ ! (-d bin) ]] then
-  mkdir lib;
+  mkdir bin;
 fi
 if [[ ! (-d data) ]] then
-  mkdir lib;
+  mkdir data;
 fi
 if [[ ! (-d data/InputFiles) ]] then
-  mkdir lib/InputFiles;
+  mkdir data/InputFiles;
 fi
 if [[ ! (-d data/OutputFiles) ]] then
-  mkdir lib/OutputFiles;
+  mkdir data/OutputFiles;
 fi
 if [[ ! (-d data/Repository) ]] then
-  mkdir lib/Repository;
+  mkdir data/Repository;
 fi
 
 echo "========================================================================================"

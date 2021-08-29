@@ -41,10 +41,10 @@ int RunPythiaAnalysisAA()
 
   MessageLogger::LogLevel messageLevel =  MessageLogger::Info; // MessageLogger::Debug; //
   unsigned long nEventRequested   = 10000;
-  unsigned long nEventReported    = 10;
-  unsigned long nEventPartialSave = 500;
-  bool    partialSave             = false;
-  bool    subsampleAnalysis       = false;
+  unsigned long nEventReported    = 1000;
+  unsigned long nEventPartialSave = 1000;
+  bool    partialSave             = true;
+  bool    subsampleAnalysis       = true;
   int     beamType                = 2212;
   double  beamEnergy              = 7000.0; // GeV
   double  minBias                 = true; // alternative is AliceV0
@@ -53,8 +53,8 @@ int RunPythiaAnalysisAA()
   TString outputPathName          = getenv("WAC_OUTPUT_PATH");
   inputPathName  += "/PYTHIA/7TEV/";
   //outputPathName += "/PYTHIA/7TEV/BetterTest/";  // radialBoostConfig->param_a      = 0.08;
-  //outputPathName += "/PYTHIA/7TEV/BetterTest2/";  // radialBoostConfig->param_a     = 0.4;
-  outputPathName += "/PYTHIA/7TEV/BetterTest3/";  // radialBoostConfig->param_a     = 0.9;
+  outputPathName += "/PYTHIA/7TEV/BetterTest2/";  // radialBoostConfig->param_a     = 0.4;
+  //outputPathName += "/PYTHIA/7TEV/BetterTest3/";  // radialBoostConfig->param_a     = 0.99;
   gSystem->mkdir(outputPathName,1);
 
   std::cout << "==================================================================================" << std::endl;
@@ -225,7 +225,7 @@ int RunPythiaAnalysisAA()
   radialBoostConfig->param_b     = 1.0;
   radialBoostConfig->betaMaximum = 0.999;
   radialBoostConfig->baseName    = "CGGA";// CG/PbPb/PbPb_Geom_Gradients.root";
-  radialBoostConfig->inputPath   = "/Users/claudeapruneau/Documents/GitHub/WAC4Dev/data//OutputFiles/CG/PbPb/"; //  PbPb_Geom_Gradients.root;
+  radialBoostConfig->inputPath   = "/Users/claudeapruneau/Documents/GitHub/WAC4/data//OutputFiles/CG/PbPb/"; //  PbPb_Geom_Gradients.root;
   radialBoostConfig->rootInputFileName = "Geom_CGGA_Gradients.root";
   radialBoostConfig->outputPath        = outputPathName;
   radialBoostConfig->rootOuputFileName = outputFileNameBase;

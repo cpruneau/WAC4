@@ -156,9 +156,6 @@ using namespace std;
 
 class Task : public MessageLogger
 {
-public:
-  enum TaskStatus   { Unknown, TaskOk, TaskEof, TaskEod, TaskWarning, TaskError, TaskFatal};
-
 protected:
 
   //!
@@ -257,11 +254,6 @@ protected:
   //! Pointer to a singleton of the class ParticleTypeCollection possibly used by this task instance for particle type identification and classification purposes.
   //!
   ParticleTypeCollection * masterCollection;
-  //!
-  //! Status of the ongoing tasks. Since this is a static variable, it reflects a global state or status of an ongoing analysis. The task status may be set or read by
-  //! all task instances.
-  //!
-  static TaskStatus taskStatus;
   
 public:
 
@@ -737,50 +729,7 @@ public:
    return particleSmearers;
   }
 
-  //!
-  //! Return the current task status of all ongoing tasks in this job.
-  //!
-  inline static TaskStatus getTaskStatus()                {    return taskStatus;       }
-  //!
-  //! Set the current  status of all ongoing tasks in this job.
-  //!
-  inline static void setTaskStatus(TaskStatus newStatus)  {    taskStatus = newStatus;  }
-  //!
-  //! Declare the current  status of all ongoing tasks in this job as OK.
-  //!
-  inline static void postTaskOk()      {    taskStatus = TaskOk;  }
-  //!
-  //! Declare the current  status of all ongoing tasks in this job as EOF (reached end of file, no more events available in the current file)
-  //!
-  inline static void postTaskEof()     {    taskStatus = TaskEof; }
-  //!
-  //! Declare the current  status of all ongoing tasks in this job as EOD (reached end of data, no more events available in the current file
-  //! and no more files registered for analysis by this job)
-  //!
-  inline static void postTaskEod()     {    taskStatus = TaskEod; }
-  //!
-  //! Declare the current  status of all ongoing tasks in this job as WARNING, thereby indicating that some abnormal but benign
-  //! condition has occured.
-  //!
-  inline static void postTaskWarning() {    taskStatus = TaskWarning; }
-  //!
-  //! Declare the current  status of all ongoing tasks in this job as ERROR, thereby indicating that some serious error
-  //! condition has occured. The tasks will be able to continue until graceful completion of the job is accomplished.
-  //!
-  inline static void postTaskError()   {    taskStatus = TaskError;   }
-  //!
-  //! Declare the current  status of all ongoing tasks in this job as FATAL, thereby indicating that some fatal error
-  //! condition has occured. This job is immediately aborted with a call to exit(1).
-  //!
-  inline static void postTaskFatal()   {    taskStatus = TaskFatal;   }
-  //!
-  //! Returns "true" is the current status of all ongoing tasks in this job is OK.
-  //!
-  inline static bool isTaskOk()        {    return (taskStatus == TaskOk);  }
-  //!
-  //! Returns a string corresponding to the current status of all ongoing tasks in this job.
-  //!
-  static TString getTaskStatusName();
+  
 
   ClassDef(Task,0)
 };

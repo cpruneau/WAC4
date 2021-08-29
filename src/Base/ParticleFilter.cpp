@@ -157,6 +157,59 @@ bool ParticleFilter::acceptType(ParticleType & type)
       case Lambda:
       pid = type.getPdgCode();
       accepting  = (pid == 3122) || (pid == -3122); break;
+      case Charm:
+      pid = type.getPdgCode();
+      accepting  = (pid==411) ||
+      (pid==421) ||
+      (pid==10411) ||
+      (pid==10421) ||
+      (pid==413) ||
+      (pid==423) ||
+      (pid==10413) ||
+      (pid==10423) ||
+      (pid==415) ||
+      (pid==425) ||
+      (pid==431) ||
+      (pid==10431) ||
+      (pid==433) ||
+      (pid==10433) ||
+      (pid==20433) ||
+      (pid==435) ||
+
+      (pid==441) ||
+      (pid==10441) ||
+      (pid==100441) ||
+      (pid==443) ||
+      (pid==10443) ||
+      (pid==20443) ||
+      (pid==100433) ||
+      (pid==30443) ||
+      (pid==445) ||
+      (pid==100445) ||
+
+      (pid==4122) ||
+      (pid==4222) ||
+      (pid==4212) ||
+      (pid==4112) ||
+      (pid==4224) ||
+      (pid==4214) ||
+      (pid==4114) ||
+      (pid==4232) ||
+      (pid==4132) ||
+      (pid==4322) ||
+      (pid==4312) ||
+      (pid==4324) ||
+      (pid==4314) ||
+      (pid==4332) ||
+      (pid==4334) ||
+      (pid==4412) ||
+      (pid==4422) ||
+      (pid==4414) ||
+      (pid==4424) ||
+      (pid==4432) ||
+      (pid==4434) ||
+      (pid==4444);
+      break;
       case ByPDG:     accepting = false; break; // this should not happen -- handled by acceptPid()
       case ByUserPID: accepting = false; break; // this should not happen -- handled by acceptPid()
     }
@@ -230,6 +283,7 @@ TString ParticleFilter::getName() const
       case Baryon:     name = "B"; break;
       case Proton:     name = "P"; break;
       case Lambda:     name = "Lam"; break;
+      case Charm:      name = "Charm"; break;
       case ByPDG:      name = "PDG";
       for (unsigned int k=0; k<pdgAccepted.size();k++)
         {
@@ -296,6 +350,7 @@ TString ParticleFilter::getTitle() const
       case Baryon:   name = "Baryon"; break;
       case Proton:   name = "p"; break;
       case Lambda:   name = "#Lambda"; break;
+      case Charm:    name = "Charm"; break;
       case ByPDG:      name = "PDG";
       for (unsigned int k=0; k<pdgAccepted.size();k++)
         {

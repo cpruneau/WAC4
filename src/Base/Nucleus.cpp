@@ -67,6 +67,7 @@ void Nucleus::defineAs(unsigned int z, unsigned int a)
   type = ParticleType::getNucleusType();
   nProtons  = 0;
   nNeutrons = 0;
+  children.clear();
   for (unsigned int iNucleon=0; iNucleon<z; iNucleon++)
     {
     children.push_back(Particle::getProton()); nProtons++;

@@ -105,12 +105,14 @@ void GlobalAnalyzer::execute()
   resetParticleCounters();
   GlobalAnalyzerConfiguration * ac = (GlobalAnalyzerConfiguration *) getConfiguration();
   EventProperties & ep = * event->getEventProperties();
+
+
   unsigned int nParticleFilters = particleFilters.size();
 
-//  if (reportInfo("GlobalAnalyzer",getName(),"execute()"))
-//    {
-//    cout << " Event has Nparticles: " << event->getNParticles() << endl;
-//    }
+  if (reportDebug("GlobalAnalyzer",getName(),"execute()"))
+    {
+    cout << " Event has Nparticles: " << event->getNParticles() << endl;
+    }
   if (ac->countParticles)
     {
     n.assign(nParticleFilters,0.0);
@@ -173,6 +175,10 @@ void GlobalAnalyzer::execute()
                        ep.sFiltered,
                        ep.bFiltered,1.0);
     }
+  if (reportDebug("GlobalAnalyzer",getName(),"execute()"))
+    {
+    event->printProperties(cout);
+    }
 }
 
 
@@ -203,5 +209,6 @@ void GlobalAnalyzer::scaleHistograms()
     {
       if (reportWarning("GlobalAnalyzer",getName(),"scaleHistograms()")) cout << "nFilteredEventsAccepted[0] == 0. No scaling performed." << endl;
     }
+
 }
 

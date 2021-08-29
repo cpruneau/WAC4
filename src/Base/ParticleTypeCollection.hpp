@@ -22,8 +22,9 @@ public:
   void readFromFile(const TString & inputFileName);
   void sortByMass();
   ParticleTypeCollection * extractCollection(int option);
-  int findIndexForPdgCode(int pdgCode);
-  int findIndexForPrivateCode(int privateCode);
+   int findIndexForType(ParticleType * type);
+   int findIndexForPdgCode(int pdgCode);
+   int findIndexForPrivateCode(int privateCode);
   void resolveTypes();
   ParticleType * findPdgCode(int pdgCode);
   ParticleType * findPrivateCode(int privateCode);

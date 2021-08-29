@@ -30,11 +30,17 @@ public:
 
   high_resolution_clock::time_point startTime;
   high_resolution_clock::time_point stopTime;
+  high_resolution_clock::time_point oldStop;
   duration<double> totalDuration;
+  duration<double> intervalDuration;
   int    days;
   int    hours;
   int    minutes;
   double seconds;
+  int    deltaDays;
+  int    deltaHours;
+  int    deltaMinutes;
+  double deltaSeconds;
 
   ClassDef(Timer,0)
 };

@@ -57,6 +57,25 @@ void  ParticleDecayer::decay2(ParticleType   & parentType,
   r1 += shift;
   r2 += shift;
   double temp = mp*mp - m1*m1 - m2*m2;
+
+//  cout << "        mp: " << mp << endl;
+//  cout << "        m1: " << m1 << endl;
+//  cout << "        m2: " << m2 << endl;
+//  cout << "   minMass: " << minMass << endl;
+//  cout << "        Px: " << parentMomentum.Px() << endl;
+//  cout << "        Py: " << parentMomentum.Py() << endl;
+//  cout << "        Pz: " << parentMomentum.Pz() << endl;
+//  cout << "      beta: " << parentMomentum.Beta() << endl;
+//  cout << "        vx: " << vx << endl;
+//  cout << "        vy: " << vy << endl;
+//  cout << "        vz: " << vz << endl;
+//  cout << "     gamma: " << gamma << endl;
+//  cout << "    mWidth: " << mWidth << endl;
+//  cout << "       tau: " << tau << endl;
+//  cout << "      taup: " << taup << endl;
+//  cout << "  lifeTime: " << lifeTime << endl;
+//  cout << "      temp: " << temp << endl;
+
   double p_lrf = sqrt(temp*temp - 4*m1*m1*m2*m2)/(2*mp);
   // randomly pick emission angle of particle 1
   double phi      = twoPi*random->Rndm();

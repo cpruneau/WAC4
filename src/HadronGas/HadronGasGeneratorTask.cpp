@@ -26,7 +26,8 @@ NucleonNucleonCollisionGenerator(),
 particleTypes(nullptr),
 stableParticleTypes(nullptr),
 hadronGases(),
-momentumGenerators()
+momentumGenerators(),
+standaloneMode(_configuration->standaloneMode)
 {
   setName(_name);
   _configuration->useParticles      = true;
@@ -42,8 +43,8 @@ void HadronGasGeneratorTask::initialize()
   Task::initialize();
   HadronGasGeneratorConfiguration & hadronGasConfig = *(HadronGasGeneratorConfiguration*) getConfiguration();
 
-  ParticleTypeCollection *   particleTypes       = ParticleTypeCollection::getMasterParticleCollection();
-  ParticleTypeCollection *   stableParticleTypes = particleTypes->extractCollection(1);
+  particleTypes       = ParticleTypeCollection::getMasterParticleCollection();
+  stableParticleTypes = particleTypes->extractCollection(1);
   stableParticleTypes->printProperties(std::cout);
   double dT = (hadronGasConfig.maxT - hadronGasConfig.minT)/hadronGasConfig.nT;
   double muB = 0.0;
@@ -59,7 +60,19 @@ void HadronGasGeneratorTask::initialize()
     gas->printProperties(std::cout);
     hadronGases.push_back(gas);
     }
-  momentumGenerators.push_back( new MomentumGenerator() );
+
+  unsigned int nSpecies = particleTypes->size();
+  for (unsigned int k=0; k<nSpecies; k++)
+    {
+    // const TString & _partName, double _mass, double _tMin, double _tMax, double _tWidth, int _stat
+
+    ParticleType * type = particleTypes->getParticleType(k);
+    TString name = type->getName();
+    double mass = type->getMass();
+    double stat = type->getStatistics();
+    MomentumGenerator * gen = new MomentumGenerator(name,mass, 0.170, 0.172, 0.001, stat);
+    momentumGenerators.push_back(gen);
+    }
 
   TString histoName = getName();
   histoName += "_relativeAbundances";
@@ -84,32 +97,73 @@ void HadronGasGeneratorTask::execute()
   if (reportNoOps("HadronGasGeneratorTask",getName(),"execute()"))
     ;
   incrementEventProcessed();
-  particleFactory->reset();
-  eventStreams[0]->reset();
+  Event & event = *eventStreams[0];
+  Particle * interaction;
   resetParticleCounters();
-  Particle * interaction = particleFactory->getNextObject();
-  interaction->reset();
-  interaction->setType( ParticleType::getInteractionType());
-  //interaction->setXYZT(0.0, 0.0, 0.0, 0.0);
-  interaction->setRThetaPhiT(3.0, TMath::PiOver2(), TMath::TwoPi()*taskRandomGenerator->Rndm(),0.0);
+
+  if (standaloneMode)
+    {
+    // In this mode, we generate one HG  event per call. One interaction vertex is
+    // inserted in the event stream and generate is called to carry out the particle generation.
+    particleFactory->reset();
+    event.reset();
+    resetParticleCounters();
+    interaction = particleFactory->getNextObject();
+    interaction->reset();
+    interaction->setType( ParticleType::getInteractionType());
+    interaction->setXYZT(0.0, 0.0, 0.0, 0.0);
+    //interaction->setRThetaPhiT(3.0, TMath::PiOver2(), TMath::TwoPi()*taskRandomGenerator->Rndm(),0.0);
+    event.add(interaction);
+    event.setNucleusA(1.0,1.0);
+    event.setNucleusB(1.0,1.0);
+    generate(interaction);
+    EventProperties & ep = * eventStreams[0]->getEventProperties();
+    ep.zProjectile       = 1;     // atomic number projectile
+    ep.aProjectile       = 1;     // mass number projectile
+    ep.nPartProjectile   = 1;     // number of participants  projectile
+    ep.zTarget           = 1;     // atomic number target
+    ep.aTarget           = 1;     // mass number target
+    ep.nPartTarget       = 1;     // number of participants  target
+    ep.nPartTotal        = 2;     // total number of participants
+    ep.nBinaryTotal      = 1;     // total number of binary collisions
+    ep.impactParameter   = -99999; // nucleus-nucleus center distance in fm
+    ep.centrality        = -99999; // fraction cross section value
+    ep.multiplicity      = eventStreams[0]->getNParticles();// nominal multiplicity in the reference range
+    ep.particlesCounted  = getNParticlesCounted();
+    ep.particlesAccepted = getNParticlesAccepted();
+    }
+  else
+    {
+    // In this mode, we generate several HG cells per event. Interaction vertices and their locations
+    // are assumed to be already loaded in the event stream and we produce as many HG cells as there
+    // are nucleon-nucleon interactions in the stream. Objects nucleusA and nucleusB are assumed defined by
+    // an earlier task and the structure EventProperties is assumed filled by that earlier task. We only fill the number of
+    // particle generated and accepted (in addition to storing the generated particles in the event)
+
+    // May skip this event if it does not satisfy the event cut.
+    if (!eventFilters[0]->accept(event)) return;
+    if (event.getParticleCount() < 1)
+      {
+      return;
+      }
+    vector<Particle*> interactions = event.getNucleonNucleonInteractions();
+
+    unsigned int n = interactions.size();
+//    if (reportWarning("PythiaEventGenerator",getName(),"execute()"))
+//      cout << "Size of interactions:" <<  n << endl;
+    for (unsigned int kInter=0; kInter<n; kInter++)
+      {
+      generate(interactions[kInter]);
+      }
+    EventProperties & ep = * event.getEventProperties();
+    ep.multiplicity      = getNParticlesAccepted(); // nominal multiplicity in the reference range
+    ep.particlesCounted  = getNParticlesCounted();
+    ep.particlesAccepted = getNParticlesAccepted();
+    }
 
 
-  eventStreams[0]->add(interaction);
-  generate(interaction);
-  EventProperties & ep = * eventStreams[0]->getEventProperties();
-  ep.zProjectile       = 1;     // atomic number projectile
-  ep.aProjectile       = 1;     // mass number projectile
-  ep.nPartProjectile   = 1;     // number of participants  projectile
-  ep.zTarget           = 1;     // atomic number target
-  ep.aTarget           = 1;     // mass number target
-  ep.nPartTarget       = 1;     // number of participants  target
-  ep.nPartTotal        = 2;     // total number of participants
-  ep.nBinaryTotal      = 1;     // total number of binary collisions
-  ep.impactParameter   = -99999; // nucleus-nucleus center distance in fm
-  ep.centrality        = -99999; // fraction cross section value
-  ep.multiplicity      = eventStreams[0]->getNParticles(); // nominal multiplicity in the reference range
-  ep.particlesCounted  = getNParticlesCounted();
-  ep.particlesAccepted = getNParticlesAccepted();
+
+
 }
 
 void HadronGasGeneratorTask::generate(Particle * parent)
@@ -121,18 +175,30 @@ void HadronGasGeneratorTask::generate(Particle * parent)
   //ParticleFilter & particleFilter = * particleFilters[0];
   Particle * particle;
   TLorentzVector parentPosition = parent->getPosition();
-  vector<double> momentumGeneratorParameters;
-  momentumGeneratorParameters = hggc.momentumGeneratorParameters;
-  int multiplicity = hggc.totalMult;
-
+  int    multiplicity = hggc.totalMult;
+  double temperature  = hggc.minTkin;
+//  if (reportDebug("HadronGasGeneratorTask",getName(),"execute()"))
+//    {
+//    cout << "         hadronGases.size(): " << hadronGases.size() << endl;
+//    cout << "  momentumGenerators.size(): " << momentumGenerators.size() << endl;
+//
+//    }
   for (int iPart=0; iPart< multiplicity; iPart++)
     {
     // implement basic no correlation scenario.
-    ParticleType * type = hadronGases[0]->generateRandomHadron();
-    double  index = hadronGases[0]->generateRandomHadronByIndex();
+    //ParticleType * type = hadronGases[0]->generateRandomHadron();
+    int     index  = hadronGases[0]->generateRandomHadronByIndex();
     double  rindex = index + 0.01;
     relativeAbundances->Fill(rindex);
-
+    if (index<0)
+      {
+      if (reportFatal("HadronGasGeneratorTask",getName(),"execute()"))
+        {
+        cout << "hadron index=" << index << endl;
+        }
+      exit(1);
+      }
+    ParticleType * type = particleTypes->getParticleType(index);
     if (type==nullptr)
       {
       if (reportError("HadronGasGeneratorTask",getName(),"execute()"))
@@ -140,10 +206,10 @@ void HadronGasGeneratorTask::generate(Particle * parent)
         cout << "HadronGas::generateRandomHadron() return null pointer. Post task error." << endl;
         }
       postTaskError();
+      exit(1);
       return;
       }
-    momentumGeneratorParameters[0] = type->getMass();
-    TLorentzVector momentum = momentumGenerators[0]->generate(hggc.generatorType,momentumGeneratorParameters,nullptr);
+    TLorentzVector momentum = momentumGenerators[index]->generate(temperature);
     particle = particleFactory->getNextObject();
     particle->setParent(parent);
     particle->set(type, momentum, parentPosition,true);

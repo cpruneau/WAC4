@@ -47,7 +47,7 @@ public:
 
   bool fillEta;
   bool fillY;
-  bool fill3D;
+  bool fillP2;
 
   ClassDef(ParticleAnalyzerConfiguration,0)
 };

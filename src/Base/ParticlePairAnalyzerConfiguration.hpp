@@ -38,7 +38,7 @@ public:
   float binCorrMM;
   float binCorrPP;
 
-  // pairs q3d
+  int nBins_n2;          double min_n2;          double max_n2;
   int nBins_DeltaPlong;  double min_DeltaPlong;  double max_DeltaPlong; double range_DeltaPlong;
   int nBins_DeltaPside;  double min_DeltaPside;  double max_DeltaPside; double range_DeltaPside;
   int nBins_DeltaPout;   double min_DeltaPout;   double max_DeltaPout;  double range_DeltaPout;
@@ -47,13 +47,7 @@ public:
   int nBins_Deta;        double min_Deta;        double max_Deta;       double width_Deta;
   int nBins_Dy;          double min_Dy;          double max_Dy;         double width_Dy;
 
-  bool fillPairs;
-  bool fill6D;
-  bool fillQ3D;
-  bool computeDptDpt;
-  bool computeP2;
-  bool computeG2;
-  bool computeBF;
+
 
 ClassDef(ParticlePairAnalyzerConfiguration,0)
 };

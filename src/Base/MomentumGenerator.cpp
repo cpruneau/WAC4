@@ -6,16 +6,74 @@
 #include "MomentumGenerator.hpp"
 ClassImp(MomentumGenerator);
 
-MomentumGenerator::MomentumGenerator(TRandom * selectedRandom)
+double probDensity(double p, double mass, double temperature, double mu, double stat)
+{
+  double e     = sqrt(p*p + mass*mass);
+  double beta  = 1.0/temperature;
+  double arg   = beta*(e-mu);
+  double density = p*p/(exp(arg)+stat);
+  return density;
+}
+
+
+MomentumGenerator::MomentumGenerator(const TString & _partName, double _mass, double _tMin, double _tMax, double _tWidth, double _stat, TRandom * _selectedRandom)
 :
-random(selectedRandom)
+partName(_partName),
+mass(_mass),
+tMin(_tMin),
+tMax(_tMax),
+tWidth(_tWidth),
+stat(_stat),
+histograms(),
+random(_selectedRandom)
+{
+  if (tWidth<=0.0 || tMax<=tMin)
+    {
+    cout << "<F> MomentumGenerator::MomentumGenerator(...) tWidth<0.0" << endl;
+    exit(1);
+    }
+  int nT = (tMax-tMin)/tWidth;
+  double zero = 0.0;
+  for (int k=0; k<nT; k++)
+    {
+    TString hName = partName;
+    hName += k;
+    double temp   = tMin + tWidth*double(k);
+    double mu     = 0.0;
+    int nBinsP    = 1000;
+    double minP   = 0.0;
+    double maxP   = 10.0;
+    double dp     = (maxP-minP)/double(nBinsP);
+    TH1 * h = new TH1D(hName,hName, nBinsP, minP, maxP);
+    double p = -dp;
+    double v;
+    for (int j=0; j<nBinsP; j++)
+      {
+      p += dp;
+      v = probDensity(p,mass,temp,mu,stat);
+      h->SetBinContent(j,v);
+      h->SetBinError(j,zero);
+      }
+    histograms.push_back(h);
+    }
+}
+
+MomentumGenerator::MomentumGenerator(TRandom * _selectedRandom)
+:
+mass(0.0),
+tMin(0.0),
+tMax(0.0),
+tWidth(0.0),
+stat(0.0),
+histograms(),
+random(_selectedRandom)
 {
 }
+
 
 TLorentzVector  MomentumGenerator::generate(GeneratorType generatorType, vector<double>& parameters, TH1 * histogramP)
 {
   TLorentzVector momentum;
-
   double px, py, pz, pt, mt, p, e, mass, ptSq, temp, sigma;
   double phi, theta, cosTh, y;
   switch (generatorType)
@@ -221,6 +279,38 @@ TLorentzVector  MomentumGenerator::generate(GeneratorType generatorType, vector<
       pz    = mt*sinh(y);
       break;
     }
+  momentum.SetPxPyPzE (px,py,pz,e);
+  return momentum;
+}
+
+TLorentzVector  MomentumGenerator::generate(double temperature)
+{
+  TLorentzVector momentum;
+
+  double px, py, pz, pt, mt, p, e, ptSq, temp, sigma;
+  double phi, theta, cosTh, y;
+
+  phi   = TMath::TwoPi()*random->Rndm( );
+  cosTh = -1.0 + 2.0*random->Rndm( );
+  theta = acos(cosTh);
+  int k = 0;
+  if (temperature <= tMin) k = 0;
+  else if (temperature >= tMax) k = -1 + histograms.size();
+  else
+    {
+    k = (temperature-tMin)/tWidth;
+    if (tWidth>histograms.size())
+      {
+      cout << "<F> MomentumGenerator::generate(double temperature) Internal error." << endl;
+      exit(1);
+      }
+    }
+  p     = histograms[k]->GetRandom();
+  e     = sqrt(mass*mass + p*p);
+  pt    = p*sin(theta);
+  px    = pt*cos(phi);
+  py    = pt*sin(phi);
+  pz    = p*cosTh;
   momentum.SetPxPyPzE (px,py,pz,e);
   return momentum;
 }

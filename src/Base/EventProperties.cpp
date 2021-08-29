@@ -31,12 +31,12 @@ impactParameter(0),
 centrality(0),
 multiplicity(0),
 other(0),
-nFilters(10),
-nFiltered(10,0.0),
-eFiltered(10,0.0),
-qFiltered(10,0.0),
-sFiltered(10,0.0),
-bFiltered(10,0.0)
+nFilters(0),
+nFiltered(),
+eFiltered(),
+qFiltered(),
+sFiltered(),
+bFiltered()
 {
 // no ops
 }
@@ -109,13 +109,12 @@ void EventProperties::clear()
   centrality      = 0;
   multiplicity    = 0;
   other           = 0;
-  nFilters        = 10;
-  double zero     = 0.0;
-  nFiltered.clear(); nFiltered.assign(nFilters,zero);
-  eFiltered.clear(); eFiltered.assign(nFilters,zero);
-  qFiltered.clear(); qFiltered.assign(nFilters,zero);
-  sFiltered.clear(); sFiltered.assign(nFilters,zero);
-  bFiltered.clear(); bFiltered.assign(nFilters,zero);
+  nFilters        = 0;
+  nFiltered.clear(); //nFiltered.assign(nFilters,zero);
+  eFiltered.clear(); //eFiltered.assign(nFilters,zero);
+  qFiltered.clear(); //qFiltered.assign(nFilters,zero);
+  sFiltered.clear(); //sFiltered.assign(nFilters,zero);
+  bFiltered.clear(); //bFiltered.assign(nFilters,zero);
 }
 
 void EventProperties::reset()
@@ -132,16 +131,12 @@ void EventProperties::reset()
   centrality      = 0;
   multiplicity    = 0;
   other           = 0;
-  nFilters        = 10;
-  double zero     = 0.0;
-  for (int k=0; k<nFilters; k++)
-  {
-  nFiltered[k] = zero;
-  eFiltered[k] = zero;
-  qFiltered[k] = zero;
-  sFiltered[k] = zero;
-  bFiltered[k] = zero;
-  }
+  nFilters        = 0;
+  nFiltered.clear(); //nFiltered.assign(nFilters,zero);
+  eFiltered.clear(); //eFiltered.assign(nFilters,zero);
+  qFiltered.clear(); //qFiltered.assign(nFilters,zero);
+  sFiltered.clear(); //sFiltered.assign(nFilters,zero);
+  bFiltered.clear(); //bFiltered.assign(nFilters,zero);
 }
 
 void EventProperties::fill(vector<double> & n,  // number of particles accepted by filter #i
@@ -150,14 +145,14 @@ void EventProperties::fill(vector<double> & n,  // number of particles accepted 
                            vector<double> & s,  // total strangeness of particles accepted by filter #i
                            vector<double> & b)
 {
-  int nFilters = nFiltered.size();
+  int nFilters = n.size();
   for (int iFilter=0; iFilter<nFilters; iFilter++)
     {
-    nFiltered[iFilter] += n[iFilter];
-    eFiltered[iFilter] += e[iFilter];
-    qFiltered[iFilter] += q[iFilter];;
-    sFiltered[iFilter] += s[iFilter];;
-    bFiltered[iFilter] += b[iFilter];;
+    nFiltered.push_back( n[iFilter] );
+    eFiltered.push_back( e[iFilter] );
+    qFiltered.push_back( q[iFilter] );
+    sFiltered.push_back( s[iFilter] );
+    bFiltered.push_back( b[iFilter] );
     }
 }
 
@@ -185,10 +180,10 @@ void EventProperties::printProperties(ostream & output)
   {
   output 
     << setw(5) << k << " "
-  << scientific << setw(10)<< setprecision(5) << nFiltered[k]
-  << scientific << setw(10)<< setprecision(5) << eFiltered[k]
-  << scientific << setw(10)<< setprecision(5) << qFiltered[k]
-  << scientific << setw(10)<< setprecision(5) << sFiltered[k]
-  << scientific << setw(10)<< setprecision(5) << bFiltered[k] << endl;
+  << scientific << setw(15)<< setprecision(5) << nFiltered[k]
+  << scientific << setw(15)<< setprecision(5) << eFiltered[k]
+  << scientific << setw(15)<< setprecision(5) << qFiltered[k]
+  << scientific << setw(15)<< setprecision(5) << sFiltered[k]
+  << scientific << setw(15)<< setprecision(5) << bFiltered[k] << endl;
   }
 }

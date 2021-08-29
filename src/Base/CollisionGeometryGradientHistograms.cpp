@@ -51,8 +51,29 @@ void CollisionGeometryGradientHistograms::loadHistograms(TFile * inputFile)
   TString bn = getHistoBaseName();
   h_edge   = loadH2(inputFile,bn+TString("edge"));
   h_radius = loadH2(inputFile,bn+TString("radius"));
+  if (!h_radius)
+    {
+    if (reportFatal("CollisionGeometryGradientHistograms",getName(),"loadHistograms(TFile * inputFile) h_radius is a nullptr"))
+      {
+      exit(1);
+      }
+    }
   h_gx     = loadH2(inputFile,bn+TString("gx"));
+  if (!h_gx)
+    {
+    if (reportFatal("CollisionGeometryGradientHistograms",getName(),"loadHistograms(TFile * inputFile) h_gx is a nullptr"))
+      {
+      exit(1);
+      }
+    }
   h_gy     = loadH2(inputFile,bn+TString("gy"));
+  if (!h_gy)
+    {
+    if (reportFatal("CollisionGeometryGradientHistograms",getName(),"loadHistograms(TFile * inputFile) h_gy is a nullptr"))
+      {
+      exit(1);
+      }
+    }
   if (reportEnd("CollisionGeometryGradientHistograms",getName(),"loadHistograms(TFile * inputFile)"))
     ;
 }

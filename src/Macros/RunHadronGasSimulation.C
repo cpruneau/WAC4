@@ -28,8 +28,8 @@ int RunHadronGasSimulation()
   gSystem->Load(includesPath+"ParticleTypeCollection.hpp");
   gSystem->Load(includesPath+"ParticleDecayMode.hpp");
   gSystem->Load(includesPath+"ParticleDecayerTask.hpp");
-  gSystem->Load(includesPath+"ParticleAnalyzer.hpp");
-  gSystem->Load(includesPath+"ParticlePairAnalyzer.hpp");
+  gSystem->Load(includesPath+"ParticleAnalyzerV2.hpp");
+  gSystem->Load(includesPath+"ParticlePairAnalyzerV2.hpp");
   gSystem->Load(includesPath+"RadialBoostTask.hpp");
   gSystem->Load(includesPath+"SubSampleStatCalculator.hpp");
   gSystem->Load("libBase.dylib");
@@ -47,19 +47,19 @@ int RunHadronGasSimulation()
   gSystem->Load(includesPath+"HadronGasVsTempHistograms.hpp");
   gSystem->Load("libHadronGas.dylib");
 
-  MessageLogger::LogLevel messageLevel = MessageLogger::Debug; // MessageLogger::Info; //
-  unsigned long nEventRequested   = 10;
+  MessageLogger::LogLevel messageLevel =  MessageLogger::Info; // MessageLogger::Debug; //
+  unsigned long nEventRequested   = 200000;
   unsigned long nEventReported    = 10000;
-  unsigned long nEventPartialSave = 500;
-  bool    partialSave             = false;
-  bool    subsampleAnalysis       = false;
+  unsigned long nEventPartialSave = 10000;
+  bool    partialSave             = true;
+  bool    subsampleAnalysis       = true;
   double  beamEnergy              = 7000.0; // GeV
   double  minBias                 = true; // alternative is AliceV0
-  TString outputFileNameBase      = "HG_200MeV_";
+  TString outputFileNameBase      = "HG_Isotropic_200MeV_";
   TString inputPathName           = getenv("WAC_INPUT_PATH");
   TString outputPathName          = getenv("WAC_OUTPUT_PATH");
   inputPathName  += "/HG/";
-  outputPathName += "/HG/SmallTest/";
+  outputPathName += "/HG/CorrectStatIsotropic/SpeedTestG1P1/";
   gSystem->mkdir(outputPathName,1);
 
   std::cout << "==================================================================================" << std::endl;
@@ -78,23 +78,24 @@ int RunHadronGasSimulation()
 //  particles->printDecayProperties(decayList);
 //  decayList.close();
 
-
-  // =====================================
-  // Configure iterator task and run it...
-  // =====================================
+  CollisionGeometryConfiguration * cggConfig = new CollisionGeometryConfiguration();
+  cggConfig->forceHistogramsRewrite = true;
+  cggConfig->nnCrossSection         = 6.4; // cross section must be adjusted for beam energy.
+  cggConfig->outputPath             = outputPathName;
+  cggConfig->rootOuputFileName      = outputFileNameBase;
 
 
   HadronGasGeneratorConfiguration * hggc = new HadronGasGeneratorConfiguration();
   hggc->volume    = 1.0; // not used here
-  hggc->totalMult = 100; // fixed
-  hggc->generatorType = MomentumGenerator::CylindricalMaxwellPtUniformY;
-  hggc->momentumGeneratorParameters.push_back(0.0);  // mass set later
-  hggc->momentumGeneratorParameters.push_back(-2.0); // min rapidity
-  hggc->momentumGeneratorParameters.push_back( 4.0); // max rapidity
-  hggc->momentumGeneratorParameters.push_back(0.200);  // pt width
-  hggc->nT    = 1; // one temperature value
+  hggc->totalMult = 20; // fixed
+  hggc->nT    = 1; // chemical  temperature values
   hggc->minT  = 0.200;
   hggc->maxT  = 0.200;
+  hggc->nTkin    = 1;     // kinetic  temperature value
+  hggc->minTkin  = 0.170;
+  hggc->maxTkin  = 0.170;
+
+  hggc->standaloneMode      = true;
   hggc->useEventStream0     = true;
   hggc->dataInputUsed       = false;
   hggc->dataInputFileName   = "";
@@ -142,96 +143,152 @@ int RunHadronGasSimulation()
   GlobalAnalyzerConfiguration * gaND = new GlobalAnalyzerConfiguration(*ga);
   gaND->setEvent = false;
 
-  ParticleAnalyzerConfiguration * ac = new ParticleAnalyzerConfiguration();
-  ac->useEventStream0             = true;
-  ac->loadHistograms              = false;
-  ac->createHistograms            = true;
-  ac->scaleHistograms             = true;
-  ac->calculateDerivedHistograms  = true;
-  ac->saveHistograms              = true;
-  ac->forceHistogramsRewrite      = true;
-  ac->partialSave                 = partialSave;
-  ac->subsampleAnalysis           = subsampleAnalysis;
-  ac->inputPath                   = inputPathName;
-  ac->outputPath                  = outputPathName;
-  ac->rootOuputFileName           = outputFileNameBase;
-  ac->nBins_pt    = 100;
-  ac->min_pt      = 0.00;
-  ac->max_pt      = 10.0;
-  ac->nBins_eta   = 80;
-  ac->min_eta     = -2;
-  ac->max_eta     = 2;
-  ac->nBins_y     = 80;
-  ac->min_y       = -2;
-  ac->max_y       = 2;
-  ac->nBins_phi   = 36;
-  ac->min_phi     = 0.0;
-  ac->max_phi     = 2.0*3.1415927;
-
+  ParticleAnalyzerConfiguration * p1C = new ParticleAnalyzerConfiguration();
+  p1C->useEventStream0             = true;
+  p1C->loadHistograms              = false;
+  p1C->createHistograms            = true;
+  p1C->scaleHistograms             = true;
+  p1C->calculateDerivedHistograms  = true;
+  p1C->saveHistograms              = true;
+  p1C->forceHistogramsRewrite      = true;
+  p1C->partialSave                 = partialSave;
+  p1C->subsampleAnalysis           = subsampleAnalysis;
+  p1C->inputPath                   = inputPathName;
+  p1C->outputPath                  = outputPathName;
+  p1C->rootOuputFileName           = outputFileNameBase;
+  p1C->nBins_n1    = 200;
+  p1C->min_n1      = 0.0;
+  p1C->max_n1      = 200.0;
+  p1C->nBins_eTot  = 200;
+  p1C->min_eTot    = 0.0;
+  p1C->max_eTot    = 400.0;
+  p1C->nBins_pt    = 400;
+  p1C->min_pt      = 0.00;
+  p1C->max_pt      = 4.0;
+  p1C->nBins_eta   = 80;
+  p1C->min_eta     = -2;
+  p1C->max_eta     = 2;
+  p1C->nBins_y     = 80;
+  p1C->min_y       = -2;
+  p1C->max_y       = 2;
+  p1C->nBins_phi   = 36;
+  p1C->min_phi     = 0.0;
+  p1C->max_phi     = 2.0*3.1415927;
+//  nBins_n1(100),          min_n1(0.0),    max_n1(10000.0), range_n1(10000.0),
+//  nBins_eTot(100),        min_eTot(0.0),  max_eTot(1.0E6), range_eTot(1.0E6),
   RadialBoostConfiguration * rbc = new RadialBoostConfiguration();
-  rbc->param_a     = 0.75;
+  rbc->useEventStream0   = true;
+  rbc->loadHistograms    = true;
+  rbc->createHistograms  = true;
+  rbc->scaleHistograms   = true;
+  rbc->saveHistograms         = true;
+  rbc->forceHistogramsRewrite = true;
+  rbc->param_a     = 0.4;
   rbc->param_b     = 1.0;
   rbc->betaMaximum = 0.999;
+  rbc->baseName    = "CGGA";// CG/PbPb/PbPb_Geom_Gradients.root";
+  rbc->inputPath   = "/Users/claudeapruneau/Documents/GitHub/WAC4/data//OutputFiles/CG/PbPb/"; //  PbPb_Geom_Gradients.root;
+  rbc->rootInputFileName = "Geom_CGGA_Gradients.root";
+  rbc->outputPath        = outputPathName;
+  rbc->rootOuputFileName = outputFileNameBase;
 
-  ////  ParticlePairAnalyzerConfiguration * ac2 = new ParticlePairAnalyzerConfiguration();
-  ////  ac2->useEventStream0             = true;
-  ////  ac2->createHistograms            = true;
-  ////  ac2->scaleHistograms             = true;
-  ////  ac2->calculateDerivedHistograms  = true;
-  ////  ac2->calculateCombinedHistograms = true;
-  ////  ac2->saveHistograms              = true;
-  ////  ac2->forceHistogramsRewrite      = true;
-  ////  ac2->partialSave                 = partialSave;
-  ////  ac2->subsampleAnalysis           = subsampleAnalysis;
-  ////  ac2->inputPath                   = inputPathName;
-  ////  ac2->outputPath                  = outputPathName;
-  ////  ac2->rootOuputFileName           = outputFileNameBase;
-  ////  ac2->nBins_pt    = 18;
-  ////  ac2->min_pt      = 0.200;
-  ////  ac2->max_pt      = 2.0;
-  ////  ac2->nBins_eta   = 40;
-  ////  ac2->min_eta     = -2;
-  ////  ac2->max_eta     = 2;
-  ////  ac2->nBins_y     = 40;
-  ////  ac2->min_y       = -2;
-  ////  ac2->max_y       = 2;
-  ////  ac2->nBins_phi   = 36;
-  ////  ac2->min_phi     = 0.0;
-  ////  ac2->max_phi     = 2.0*3.1415927;
+    ParticlePairAnalyzerConfiguration * p2C = new ParticlePairAnalyzerConfiguration();
+    p2C->useEventStream0             = true;
+    p2C->createHistograms            = true;
+    p2C->scaleHistograms             = true;
+    p2C->calculateDerivedHistograms  = true;
+    p2C->calculateCombinedHistograms = false;
+    p2C->saveHistograms              = false;
+    p2C->forceHistogramsRewrite      = true;
+    p2C->partialSave                 = partialSave;
+    p2C->subsampleAnalysis           = subsampleAnalysis;
+    p2C->inputPath                   = inputPathName;
+    p2C->outputPath                  = outputPathName;
+    p2C->rootOuputFileName           = outputFileNameBase;
+  p2C->fillEta     = true;
+  p2C->fillP2      = false;
+  p2C->nBins_n2    = 100;
+  p2C->min_n2      = 0.0;
+  p2C->max_n2      = 400.0;
+    p2C->nBins_pt    = 20;
+    p2C->min_pt      = 0.001;
+    p2C->max_pt      = 2.0;
+    p2C->nBins_eta   = 40;
+    p2C->min_eta     = -2;
+    p2C->max_eta     = 2;
+    p2C->nBins_y     = 40;
+    p2C->min_y       = -2;
+    p2C->max_y       = 2;
+    p2C->nBins_phi   = 36;
+    p2C->min_phi     = 0.0;
+    p2C->max_phi     = 2.0*3.1415927;
+    p2C->validate();
+
   ////
   ////  vector<unsigned int> comb;
-  ////  comb.push_back(0);comb.push_back(3); ac2->combinations.push_back( comb ); comb.clear();
-  ////  comb.push_back(0);comb.push_back(1); comb.push_back(3);comb.push_back(4); ac2->combinations.push_back( comb );comb.clear();
-  ////  comb.push_back(0);comb.push_back(2); comb.push_back(3);comb.push_back(5); ac2->combinations.push_back( comb );comb.clear();
-  ////  comb.push_back(1);comb.push_back(0); comb.push_back(4);comb.push_back(3); ac2->combinations.push_back( comb );comb.clear();
-  ////  comb.push_back(1);comb.push_back(4); ac2->combinations.push_back( comb );  comb.clear();
-  ////  comb.push_back(1);comb.push_back(2); comb.push_back(4);comb.push_back(5); ac2->combinations.push_back( comb );comb.clear();
-  ////  comb.push_back(2);comb.push_back(0); comb.push_back(5);comb.push_back(3); ac2->combinations.push_back( comb );comb.clear();
-  ////  comb.push_back(2);comb.push_back(1); comb.push_back(5);comb.push_back(4); ac2->combinations.push_back( comb );comb.clear();
-  ////  comb.push_back(2);comb.push_back(5); ac2->combinations.push_back( comb );
+  ////  comb.push_back(0);comb.push_back(3); p2C->combinations.push_back( comb ); comb.clear();
+  ////  comb.push_back(0);comb.push_back(1); comb.push_back(3);comb.push_back(4); p2C->combinations.push_back( comb );comb.clear();
+  ////  comb.push_back(0);comb.push_back(2); comb.push_back(3);comb.push_back(5); p2C->combinations.push_back( comb );comb.clear();
+  ////  comb.push_back(1);comb.push_back(0); comb.push_back(4);comb.push_back(3); p2C->combinations.push_back( comb );comb.clear();
+  ////  comb.push_back(1);comb.push_back(4); p2C->combinations.push_back( comb );  comb.clear();
+  ////  comb.push_back(1);comb.push_back(2); comb.push_back(4);comb.push_back(5); p2C->combinations.push_back( comb );comb.clear();
+  ////  comb.push_back(2);comb.push_back(0); comb.push_back(5);comb.push_back(3); p2C->combinations.push_back( comb );comb.clear();
+  ////  comb.push_back(2);comb.push_back(1); comb.push_back(5);comb.push_back(4); p2C->combinations.push_back( comb );comb.clear();
+  ////  comb.push_back(2);comb.push_back(5); p2C->combinations.push_back( comb );
 
   cout << "Now, let's setup the pdg list" << endl;
 
   vector<int> allPdgCodes;     allPdgCodes = particles->getListOfPdgCodes();
   vector<int> stablePdgCodes;  stablePdgCodes = stableParticles->getListOfPdgCodes();
 
+  vector<EventFilter*>    eventFiltersGeomGen;
   vector<EventFilter*>    eventFiltersG1;
   vector<EventFilter*>    eventFiltersP1;
   vector<EventFilter*>    eventFiltersP2;
   vector<ParticleFilter*> particleFiltersG1;
-  vector<ParticleFilter*> particleFiltersP1;
-  vector<ParticleFilter*> particleFiltersP2;
+  vector<ParticleFilter*> particleFiltersP1ND; // no decays
+  vector<ParticleFilter*> particleFiltersP1WD; // with decays
+  vector<ParticleFilter*> particleFiltersP2ND;
+  vector<ParticleFilter*> particleFiltersP2WD;
 
   EventFilter * openEventFilter = new EventFilter(EventFilter::MinBias,0.0,0.0);
 
   cout << "Now, let's setup the event filters" << endl;
+
+///
+  int centralityOptionGeom    = 1;
+  switch (centralityOptionGeom)
+    {
+      default:
+      case 0: // Minimum bias only -- open wide
+      {
+      eventFiltersGeomGen.push_back( openEventFilter);
+      //eventFiltersGeomAna.push_back( openEventFilter);
+      }
+      break;
+
+      case 1:  // Bins in impact parameter b
+      {
+      eventFiltersGeomGen.push_back( openEventFilter);
+      vector<double> limits = { 0.0, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0};
+      //eventFiltersGeomAna = EventFilter::createEventFilterSet(EventFilter::ImpactParameter,limits);
+      }
+      break;
+    }
+
+
+
+  ///
+
+
+
 
   eventFiltersG1.push_back   ( openEventFilter);
   int eventFilterOption = 0;
   switch (eventFilterOption)
     {
       case 0:
-      eventFiltersP1.push_back     ( openEventFilter); break;
+      eventFiltersP1.push_back     ( openEventFilter);
       eventFiltersP2.push_back     ( openEventFilter); break;
       case 1:
       vector<double> limits;
@@ -254,7 +311,8 @@ int RunHadronGasSimulation()
   cout << "Now, let's setup the particle filters" << endl;
 
 
-  ParticleFilter * openPartFilter  = new ParticleFilter(0.0000, 100.0, -6.0, 6.0, 10.0, -10.0,ParticleFilter::Hadron,ParticleFilter::Charged,ParticleFilter::Live);
+  //ParticleFilter * openPartFilter  = new ParticleFilter(0.0000, 100.0, -6.0, 6.0, 10.0, -10.0,ParticleFilter::Hadron,ParticleFilter::Charged,ParticleFilter::Live);
+  ParticleFilter * openPartFilter  = new ParticleFilter(0.0000, 100.0, -6.0, 6.0, 10.0, -10.0,ParticleFilter::Hadron,ParticleFilter::AllCharges,ParticleFilter::Live);
   vector<ParticleFilter*>  particleFiltersAllHG    = ParticleFilter::createMultiplePdgFilters(0.0000, 100.0, -6.0, 6.0, 10.0, -10.0,allPdgCodes);
   vector<ParticleFilter*>  particleFiltersStableHG = ParticleFilter::createMultiplePdgFilters(0.0000, 100.0, -6.0, 6.0, 10.0, -10.0,stablePdgCodes);
 
@@ -264,45 +322,62 @@ int RunHadronGasSimulation()
   int particleFilterOptionP1 = 1;
   switch (particleFilterOptionP1)
     {
-      case 0: particleFiltersP1.push_back( openPartFilter ); break;
-      case 1: for (unsigned int k=0; k<particleFiltersAllHG.size();k++)    particleFiltersP1.push_back(particleFiltersAllHG[k] );    break;
-      case 2: for (unsigned int k=0; k<particleFiltersStableHG.size();k++) particleFiltersP1.push_back(particleFiltersStableHG[k] ); break;
-      case 3: particleFiltersP1 = ParticleFilter::createChargedHadronFilters(0.000, 10.0, -2.0, 2.0, 10.0, -10.0);  break;
-      case 4: particleFiltersP1 = ParticleFilter::createPlusMinusHadronFilters(0.000, 10.0, -2.0, 2.0, 10.0, -10.0);  break;
+      case 0:
+      particleFiltersP1ND.push_back( openPartFilter );
+      particleFiltersP1WD.push_back( openPartFilter ); break;
+
+      case 1:
+      for (unsigned int k=0; k<particleFiltersAllHG.size();k++)    particleFiltersP1ND.push_back(particleFiltersAllHG[k] );
+      for (unsigned int k=0; k<particleFiltersStableHG.size();k++) particleFiltersP1WD.push_back(particleFiltersStableHG[k] ); break;
+
+      case 3:
+      particleFiltersP1ND.push_back( openPartFilter );
+      particleFiltersP1WD = ParticleFilter::createChargedHadronFilters(0.000, 10.0, -2.0, 2.0, 10.0, -10.0);  break;
+
+      case 4:
+      particleFiltersP1ND.push_back( openPartFilter );
+      particleFiltersP1WD = ParticleFilter::createPlusMinusHadronFilters(0.000, 10.0, -2.0, 2.0, 10.0, -10.0);  break;
     }
 
+  vector<EventFilter*> eventFiltersRadialBoost;
+  vector<double> limits = { 0.0, 0.5, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0};
+  eventFiltersRadialBoost = EventFilter::createEventFilterSet(EventFilter::ImpactParameter,limits);
+
   cout << "Now, instantiating tasks..." << endl;
+
+  CollisionGeometryGenerator * collisionGeomGenerator = new CollisionGeometryGenerator("CGG", cggConfig,eventFiltersGeomGen,messageLevel);
 
   HadronGasGeneratorTask * hadronGasGeneratorTask = new HadronGasGeneratorTask("HadronGasGenerator",hggc,messageLevel);
   ParticleDecayerTask    * decayer = new ParticleDecayerTask();
 
-  RadialBoostTask  * radialBoostTask     = new RadialBoostTask ("R1",  rbc, eventFiltersG1, messageLevel);
-  GlobalAnalyzer   * globalAnalyzerND    = new GlobalAnalyzer  ("G1ND",gaND,eventFiltersG1, particleFiltersG1, messageLevel);  // generated
-  GlobalAnalyzer   * globalAnalyzerBs    = new GlobalAnalyzer  ("G1Bs",ga,  eventFiltersG1, particleFiltersG1, messageLevel);  // boosted
-  GlobalAnalyzer   * globalAnalyzer      = new GlobalAnalyzer  ("G1",  ga,  eventFiltersG1, particleFiltersG1, messageLevel);  // with decays
-  ParticleAnalyzer * particleAnalyzerND  = new ParticleAnalyzer("P1ND",ac,  eventFiltersP1, particleFiltersP1,   messageLevel);  // analysis w/o decays
-  ParticleAnalyzer * particleAnalyzerBs  = new ParticleAnalyzer("P1BS",ac,  eventFiltersP1, particleFiltersP1,   messageLevel);
-  ParticleAnalyzer * particleAnalyzer    = new ParticleAnalyzer("P1",  ac,  eventFiltersP1, particleFiltersP1,   messageLevel);
-  //  ParticlePairAnalyzer * particlePairAnalyzerND  = new ParticlePairAnalyzer("P2", ac2, eventFiltersP2, particleFiltersP2, messageLevel);
-  //  ParticlePairAnalyzer * particlePairAnalyzer    = new ParticlePairAnalyzer("P2", ac2, eventFiltersP2, particleFiltersP2, messageLevel);
+  RadialBoostTask  * r1     = new RadialBoostTask ("R1",  rbc, eventFiltersRadialBoost, messageLevel);
+  GlobalAnalyzer   * g1ND    = new GlobalAnalyzer  ("G1ND",gaND,eventFiltersG1, particleFiltersG1, messageLevel);  // generated
+  GlobalAnalyzer   * g1WD    = new GlobalAnalyzer  ("G1WD",ga,  eventFiltersG1, particleFiltersG1, messageLevel);  // boosted
+  GlobalAnalyzer   * g1Bs    = new GlobalAnalyzer  ("G1Bs",ga,  eventFiltersG1, particleFiltersG1, messageLevel);  // boosted
+  ParticleAnalyzerV2 * p1ND  = new ParticleAnalyzerV2("P1ND",p1C,  eventFiltersP1, particleFiltersP1ND,   messageLevel);  // analysis w/o decays
+  ParticleAnalyzerV2 * p1WD  = new ParticleAnalyzerV2("P1WD",p1C,  eventFiltersP1, particleFiltersP1WD,   messageLevel);  // analysis w/o decays
+  ParticleAnalyzerV2 * p1Bs  = new ParticleAnalyzerV2("P1BS",p1C,  eventFiltersP1, particleFiltersP1ND,   messageLevel);
+  ParticlePairAnalyzerV2 * p2WD  = new ParticlePairAnalyzerV2("P2WD", p2C, eventFiltersP2, particleFiltersP1WD, messageLevel);
 
   TaskIterator * masterTask = new TaskIterator();
+  masterTask->setName("IteratorTask");
   masterTask->setNEventRequested(nEventRequested);
   masterTask->setNEventReported(nEventReported);
   masterTask->setReportLevel(messageLevel);
   masterTask->setNEventPartialSave(nEventPartialSave);
   masterTask->setPartialSave(partialSave);
   masterTask->setSubsampleAnalysis(subsampleAnalysis);
+  //masterTask->addSubtask( collisionGeomGenerator );
   masterTask->addSubtask( hadronGasGeneratorTask );
-  masterTask->addSubtask( globalAnalyzerND       );
-  masterTask->addSubtask( particleAnalyzerND     );
-  masterTask->addSubtask( radialBoostTask        );
-  masterTask->addSubtask( globalAnalyzerBs       );
-  masterTask->addSubtask( particleAnalyzerBs     );
-  masterTask->addSubtask( decayer                );
-  masterTask->addSubtask( globalAnalyzer         );
-  masterTask->addSubtask( particleAnalyzer       );
-  // masterTask->addSubtask( particlePairAnalyzer );
+  masterTask->addSubtask( g1ND       );
+  //masterTask->addSubtask( p1ND     );
+  //masterTask->addSubtask( r1        );
+  //masterTask->addSubtask( g1Bs       );
+  //masterTask->addSubtask( p1Bs     );
+  masterTask->addSubtask( decayer  );
+  masterTask->addSubtask( g1WD     );
+  masterTask->addSubtask( p1WD     );
+  //masterTask->addSubtask( p2WD );
   masterTask->run();
 
   return 0;

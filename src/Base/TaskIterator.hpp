@@ -21,6 +21,7 @@ public:
   virtual ~TaskIterator() {}
   virtual void run();
   virtual void run(long nEvent, long nReport);
+  virtual void execute();
   inline void setNEventRequested(long _nEventsRequested)    { nEventRequested    = _nEventsRequested; }
   inline void setNEventReported(long _nEventsReported)      { nEventReported     = _nEventsReported; }
   inline void setNEventPartialSave(long _nEventsPartialSave){ nEventPartialSave  = _nEventsPartialSave; }
@@ -32,6 +33,8 @@ public:
   inline long getNEventPartialSave() const { return nEventPartialSave; }
   inline bool getPartialSave() const       { return partialSave; }
   inline bool getSubsampleAnalysis() const { return subsampleAnalysis; }
+
+
 
 protected:
 

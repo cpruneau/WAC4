@@ -8,7 +8,8 @@ StatStudyHistograms::StatStudyHistograms(int nSubSamplesUsed,
 Histograms(collectionName,nullptr,debugLevel),
 nSubSamples(nSubSamplesUsed)
 {
- // no ops
+  appendClassName("StatStudyHistograms");
+  setInstanceName(name);
 }
 
 StatStudyHistograms::~StatStudyHistograms()
